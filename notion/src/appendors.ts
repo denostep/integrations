@@ -1,6 +1,5 @@
-import { maybeClient, urlToId } from './helpers.ts';
-import { Client, Tuner } from './mod.ts';
-import axiod from 'https://deno.land/x/axiod/mod.ts';
+import Tuner from "https://deno.land/x/tuner@v0.1.4/mod.ts";
+import axiod from "https://deno.land/x/axiod/mod.ts";
 
 async function appendBlock(
   blockId: string,
@@ -11,10 +10,10 @@ async function appendBlock(
     data,
     {
       headers: {
-        'accept': 'application/json',
-        'Notion-Version': '2022-06-28',
-        'content-type': 'application/json',
-        'Authorization': `Bearer ${Tuner.getEnv('NOTION_KEY')}`,
+        "accept": "application/json",
+        "Notion-Version": "2022-06-28",
+        "content-type": "application/json",
+        "Authorization": `Bearer ${Tuner.getEnv("NOTION_KEY")}`,
       },
     },
   );
@@ -29,11 +28,11 @@ export async function appendParagraph(
   const data = {
     children: [
       {
-        'paragraph': {
-          'rich_text': [
+        "paragraph": {
+          "rich_text": [
             {
-              'text': {
-                'content': text,
+              "text": {
+                "content": text,
               },
             },
           ],
@@ -54,15 +53,15 @@ export async function appendToDo(
   const data = {
     children: [
       {
-        'to_do': {
-          'rich_text': [
+        "to_do": {
+          "rich_text": [
             {
-              'text': {
-                'content': text,
+              "text": {
+                "content": text,
               },
             },
           ],
-          'checked': checked,
+          "checked": checked,
         },
       },
     ],
@@ -80,15 +79,15 @@ export async function appendCode(
   const data = {
     children: [
       {
-        'code': {
-          'rich_text': [
+        "code": {
+          "rich_text": [
             {
-              'text': {
-                'content': text,
+              "text": {
+                "content": text,
               },
             },
           ],
-          'language': language,
+          "language": language,
         },
       },
     ],
@@ -105,11 +104,11 @@ export async function appendQuote(
   const data = {
     children: [
       {
-        'quote': {
-          'rich_text': [
+        "quote": {
+          "rich_text": [
             {
-              'text': {
-                'content': text,
+              "text": {
+                "content": text,
               },
             },
           ],
@@ -130,16 +129,16 @@ export async function appendCallout(
   const data = {
     children: [
       {
-        'callout': {
-          'rich_text': [
+        "callout": {
+          "rich_text": [
             {
-              'text': {
-                'content': text,
+              "text": {
+                "content": text,
               },
             },
           ],
-          'icon': {
-            type: 'emoji',
+          "icon": {
+            type: "emoji",
             emoji: icon,
           },
         },
@@ -158,15 +157,15 @@ export async function appendH1(
   const data = {
     children: [
       {
-        'heading_1': {
-          'rich_text': [
+        "heading_1": {
+          "rich_text": [
             {
-              'text': {
-                'content': text,
+              "text": {
+                "content": text,
               },
             },
           ],
-          'is_toggleable': false,
+          "is_toggleable": false,
         },
       },
     ],
@@ -183,15 +182,15 @@ export async function appendH2(
   const data = {
     children: [
       {
-        'heading_2': {
-          'rich_text': [
+        "heading_2": {
+          "rich_text": [
             {
-              'text': {
-                'content': text,
+              "text": {
+                "content": text,
               },
             },
           ],
-          'is_toggleable': false,
+          "is_toggleable": false,
         },
       },
     ],
@@ -208,15 +207,15 @@ export async function appendH3(
   const data = {
     children: [
       {
-        'heading_3': {
-          'rich_text': [
+        "heading_3": {
+          "rich_text": [
             {
-              'text': {
-                'content': text,
+              "text": {
+                "content": text,
               },
             },
           ],
-          'is_toggleable': false,
+          "is_toggleable": false,
         },
       },
     ],
@@ -233,11 +232,11 @@ export async function appendBLItem(
   const data = {
     children: [
       {
-        'bulleted_list_item': {
-          'rich_text': [
+        "bulleted_list_item": {
+          "rich_text": [
             {
-              'text': {
-                'content': text,
+              "text": {
+                "content": text,
               },
             },
           ],
@@ -257,11 +256,11 @@ export async function appendNLItem(
   const data = {
     children: [
       {
-        'numbered_list_item': {
-          'rich_text': [
+        "numbered_list_item": {
+          "rich_text": [
             {
-              'text': {
-                'content': text,
+              "text": {
+                "content": text,
               },
             },
           ],
@@ -281,11 +280,11 @@ export async function appendToggleText(
   const data = {
     children: [
       {
-        'toggle': {
-          'rich_text': [
+        "toggle": {
+          "rich_text": [
             {
-              'text': {
-                'content': text,
+              "text": {
+                "content": text,
               },
             },
           ],

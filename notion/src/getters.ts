@@ -1,8 +1,9 @@
-import axiod from 'https://deno.land/x/axiod/mod.ts';
-import { Block } from './blockInterfaces.ts';
-import { childrenListError } from './errors/mod.ts';
-import { maybeClient } from './helpers.ts';
-import { Client, Tuner } from './mod.ts';
+import axiod from "https://deno.land/x/axiod/mod.ts";
+import { Block } from "./blockInterfaces.ts";
+import { childrenListError } from "./errors/mod.ts";
+import { maybeClient } from "./helpers.ts";
+import Client from "https://deno.land/x/notion_sdk@v2.2.3/src/Client.ts";
+import Tuner from "https://deno.land/x/tuner@v0.1.4/mod.ts";
 
 export async function getBlocksByPage(
   pageId: string,
@@ -45,10 +46,10 @@ export async function getChildren(
     `https://api.notion.com/v1/blocks/${blockId}/children`,
     {
       headers: {
-        'accept': 'application/json',
-        'Notion-Version': '2022-06-28',
-        'content-type': 'application/json',
-        'Authorization': `Bearer ${Tuner.getEnv('NOTION_KEY')}`,
+        "accept": "application/json",
+        "Notion-Version": "2022-06-28",
+        "content-type": "application/json",
+        "Authorization": `Bearer ${Tuner.getEnv("NOTION_KEY")}`,
       },
     },
   );

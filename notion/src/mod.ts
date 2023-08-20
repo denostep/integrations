@@ -1,4 +1,23 @@
-import Tuner from 'https://deno.land/x/tuner@v0.1.0/mod.ts';
-import Client from 'https://deno.land/x/notion_sdk@v2.2.3/src/Client.ts';
-export { Client };
-export { Tuner };
+import { append } from "./appendors.ts";
+import { extractFromBlock } from "./extractors.ts";
+import * as types from "./blockInterfaces.ts";
+import {
+  getBlockById,
+  getBlocksByPage,
+  getChildren,
+  getFirstBlock,
+} from "./getters.ts";
+import { urlToId } from "./helpers.ts";
+
+export default {
+  append,
+  extract: extractFromBlock,
+  types,
+  get: {
+    blocksOnPage: getBlocksByPage,
+    blockById: getBlockById,
+    firstBlock: getFirstBlock,
+    children: getChildren,
+  },
+  urlToId,
+};

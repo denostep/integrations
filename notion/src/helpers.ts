@@ -1,6 +1,7 @@
 import Client from "https://deno.land/x/notion_sdk@v2.2.3/src/Client.ts";
 import { urlToIdError } from "./errors/formatErrors.ts";
 import Tuner from "https://deno.land/x/tuner@v0.1.4/mod.ts";
+import { Notion } from "./notion.ts";
 
 export const urlToId = {
   page: (url: string): string => {
@@ -26,7 +27,7 @@ export const urlToId = {
   },
 };
 
-export async function maybeClient(client: Client | undefined) {
+export async function maybeClient(client: Client | undefined, key: string) {
   return client ||
-    new Client({ auth: Tuner.getEnv("NOTION_KEY") });
+    new Client({ auth: key });
 }

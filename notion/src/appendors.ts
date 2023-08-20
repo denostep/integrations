@@ -1,318 +1,338 @@
-import Tuner from "https://deno.land/x/tuner@v0.1.4/mod.ts";
 import axiod from "https://deno.land/x/axiod/mod.ts";
+import { Notion } from "./notion.ts";
+import { Block } from "http://localhost:8000/src/provider/scheme/block.ts";
+import {
+  BLItemBlock,
+  CalloutBlock,
+  CodeBlock,
+  H1Block,
+  H2Block,
+  H3Block,
+  NLIBlock,
+  ParagraphBlock,
+  QuoteBlock,
+  ToDoBlock,
+  ToggleTextBlock,
+} from "./blockInterfaces.ts";
 
-async function appendBlock(
-  blockId: string,
-  data: any,
-) {
-  const res = await axiod.patch(
-    `https://api.notion.com/v1/blocks/${blockId}/children`,
-    data,
-    {
-      headers: {
-        "accept": "application/json",
-        "Notion-Version": "2022-06-28",
-        "content-type": "application/json",
-        "Authorization": `Bearer ${Tuner.getEnv("NOTION_KEY")}`,
-      },
-    },
-  );
-  console.log(res);
-}
+export class Appendor {
+  key: string;
+  constructor(key: string) {
+    this.key = key;
+  }
 
-export async function appendParagraph(
-  blockId: string,
-  text: string,
-  after?: string,
-) {
-  const data = {
-    children: [
+  appendBlock = async (blockId: string, data: any) => {
+    const res = await axiod.patch(
+      `https://api.notion.com/v1/blocks/${blockId}/children`,
+      data,
       {
-        "paragraph": {
-          "rich_text": [
-            {
-              "text": {
-                "content": text,
-              },
-            },
-          ],
+        headers: {
+          "accept": "application/json",
+          "Notion-Version": "2022-06-28",
+          "content-type": "application/json",
+          "Authorization": `Bearer ${this.key}`,
         },
       },
-    ],
-    after,
+    );
+    console.log(res);
+    if (res.status === 200) return res.data.results;
+    // throw new Error(res.statusText);
   };
-  await appendBlock(blockId, data);
-}
 
-export async function appendToDo(
-  blockId: string,
-  text: string,
-  checked: boolean,
-  after?: string,
-) {
-  const data = {
-    children: [
-      {
-        "to_do": {
-          "rich_text": [
-            {
-              "text": {
-                "content": text,
+  appendParagraph = async (
+    blockId: string,
+    text: string,
+    after?: string,
+  ) => {
+    const data = {
+      children: [
+        {
+          "paragraph": {
+            "rich_text": [
+              {
+                "text": {
+                  "content": text,
+                },
               },
-            },
-          ],
-          "checked": checked,
-        },
-      },
-    ],
-    after,
-  };
-  await appendBlock(blockId, data);
-}
-
-export async function appendCode(
-  blockId: string,
-  text: string,
-  language: string,
-  after?: string,
-) {
-  const data = {
-    children: [
-      {
-        "code": {
-          "rich_text": [
-            {
-              "text": {
-                "content": text,
-              },
-            },
-          ],
-          "language": language,
-        },
-      },
-    ],
-    after,
-  };
-  await appendBlock(blockId, data);
-}
-
-export async function appendQuote(
-  blockId: string,
-  text: string,
-  after?: string,
-) {
-  const data = {
-    children: [
-      {
-        "quote": {
-          "rich_text": [
-            {
-              "text": {
-                "content": text,
-              },
-            },
-          ],
-        },
-      },
-    ],
-    after,
-  };
-  await appendBlock(blockId, data);
-}
-
-export async function appendCallout(
-  blockId: string,
-  text: string,
-  icon: string,
-  after?: string,
-) {
-  const data = {
-    children: [
-      {
-        "callout": {
-          "rich_text": [
-            {
-              "text": {
-                "content": text,
-              },
-            },
-          ],
-          "icon": {
-            type: "emoji",
-            emoji: icon,
+            ],
           },
         },
-      },
-    ],
-    after,
+      ],
+      after,
+    };
+    return (await this.appendBlock(blockId, data))[0] as ParagraphBlock;
   };
-  await appendBlock(blockId, data);
-}
 
-export async function appendH1(
-  blockId: string,
-  text: string,
-  after?: string,
-) {
-  const data = {
-    children: [
-      {
-        "heading_1": {
-          "rich_text": [
-            {
-              "text": {
-                "content": text,
+  appendToDo = async (
+    blockId: string,
+    text: string,
+    checked: boolean,
+    after?: string,
+  ) => {
+    const data = {
+      children: [
+        {
+          "to_do": {
+            "rich_text": [
+              {
+                "text": {
+                  "content": text,
+                },
               },
-            },
-          ],
-          "is_toggleable": false,
+            ],
+            "checked": checked,
+          },
         },
-      },
-    ],
-    after,
+      ],
+      after,
+    };
+    return (await this.appendBlock(blockId, data))[0] as ToDoBlock;
   };
-  await appendBlock(blockId, data);
-}
 
-export async function appendH2(
-  blockId: string,
-  text: string,
-  after?: string,
-) {
-  const data = {
-    children: [
-      {
-        "heading_2": {
-          "rich_text": [
-            {
-              "text": {
-                "content": text,
+  appendCode = async (
+    blockId: string,
+    text: string,
+    language: string,
+    after?: string,
+  ) => {
+    const data = {
+      children: [
+        {
+          "code": {
+            "rich_text": [
+              {
+                "text": {
+                  "content": text,
+                },
               },
-            },
-          ],
-          "is_toggleable": false,
+            ],
+            "language": language,
+          },
         },
-      },
-    ],
-    after,
+      ],
+      after,
+    };
+    return (await this.appendBlock(blockId, data))[0] as CodeBlock;
   };
-  await appendBlock(blockId, data);
-}
 
-export async function appendH3(
-  pageId: string,
-  text: string,
-  after?: string,
-) {
-  const data = {
-    children: [
-      {
-        "heading_3": {
-          "rich_text": [
-            {
-              "text": {
-                "content": text,
+  appendQuote = async (
+    blockId: string,
+    text: string,
+    after?: string,
+  ) => {
+    const data = {
+      children: [
+        {
+          "quote": {
+            "rich_text": [
+              {
+                "text": {
+                  "content": text,
+                },
               },
-            },
-          ],
-          "is_toggleable": false,
+            ],
+          },
         },
-      },
-    ],
-    after,
+      ],
+      after,
+    };
+    return (await this.appendBlock(blockId, data))[0] as QuoteBlock;
   };
-  await appendBlock(pageId, data);
-}
 
-export async function appendBLItem(
-  pageId: string,
-  text: string,
-  after?: string,
-) {
-  const data = {
-    children: [
-      {
-        "bulleted_list_item": {
-          "rich_text": [
-            {
-              "text": {
-                "content": text,
+  appendCallout = async (
+    blockId: string,
+    text: string,
+    icon: string,
+    after?: string,
+  ) => {
+    const data = {
+      children: [
+        {
+          "callout": {
+            "rich_text": [
+              {
+                "text": {
+                  "content": text,
+                },
               },
+            ],
+            "icon": {
+              type: "emoji",
+              emoji: icon,
             },
-          ],
+          },
         },
-      },
-    ],
-    after,
+      ],
+      after,
+    };
+    return (await this.appendBlock(blockId, data))[0] as CalloutBlock;
   };
-  await appendBlock(pageId, data);
-}
 
-export async function appendNLItem(
-  pageId: string,
-  text: string,
-  after?: string,
-) {
-  const data = {
-    children: [
-      {
-        "numbered_list_item": {
-          "rich_text": [
-            {
-              "text": {
-                "content": text,
+  appendH1 = async (
+    blockId: string,
+    text: string,
+    after?: string,
+  ) => {
+    const data = {
+      children: [
+        {
+          "heading_1": {
+            "rich_text": [
+              {
+                "text": {
+                  "content": text,
+                },
               },
-            },
-          ],
+            ],
+            "is_toggleable": false,
+          },
         },
-      },
-    ],
-    after,
+      ],
+      after,
+    };
+    return (await this.appendBlock(blockId, data))[0] as H1Block;
   };
-  await appendBlock(pageId, data);
-}
 
-export async function appendToggleText(
-  pageId: string,
-  text: string,
-  after?: string,
-) {
-  const data = {
-    children: [
-      {
-        "toggle": {
-          "rich_text": [
-            {
-              "text": {
-                "content": text,
+  appendH2 = async (
+    blockId: string,
+    text: string,
+    after?: string,
+  ) => {
+    const data = {
+      children: [
+        {
+          "heading_2": {
+            "rich_text": [
+              {
+                "text": {
+                  "content": text,
+                },
               },
-            },
-          ],
+            ],
+            "is_toggleable": false,
+          },
         },
-      },
-    ],
-    after,
+      ],
+      after,
+    };
+    return (await this.appendBlock(blockId, data))[0] as H2Block;
   };
-  await appendBlock(pageId, data);
+
+  appendH3 = async (
+    blockId: string,
+    text: string,
+    after?: string,
+  ) => {
+    const data = {
+      children: [
+        {
+          "heading_3": {
+            "rich_text": [
+              {
+                "text": {
+                  "content": text,
+                },
+              },
+            ],
+            "is_toggleable": false,
+          },
+        },
+      ],
+      after,
+    };
+    return (await this.appendBlock(blockId, data))[0] as H3Block;
+  };
+
+  appendBLItem = async (
+    blockId: string,
+    text: string,
+    after?: string,
+  ) => {
+    const data = {
+      children: [
+        {
+          "bulleted_list_item": {
+            "rich_text": [
+              {
+                "text": {
+                  "content": text,
+                },
+              },
+            ],
+          },
+        },
+      ],
+      after,
+    };
+    return (await this.appendBlock(blockId, data))[0] as BLItemBlock;
+  };
+
+  appendNLItem = async (
+    blockId: string,
+    text: string,
+    after?: string,
+  ) => {
+    const data = {
+      children: [
+        {
+          "numbered_list_item": {
+            "rich_text": [
+              {
+                "text": {
+                  "content": text,
+                },
+              },
+            ],
+          },
+        },
+      ],
+      after,
+    };
+    return (await this.appendBlock(blockId, data))[0] as NLIBlock;
+  };
+
+  appendToggleText = async (
+    blockId: string,
+    text: string,
+    after?: string,
+  ) => {
+    const data = {
+      children: [
+        {
+          "toggle": {
+            "rich_text": [
+              {
+                "text": {
+                  "content": text,
+                },
+              },
+            ],
+          },
+        },
+      ],
+      after,
+    };
+    return (await this.appendBlock(blockId, data))[0] as ToggleTextBlock;
+  };
+
+  append = {
+    paragraph: this.appendParagraph,
+    toDo: this.appendToDo,
+    code: this.appendCode,
+    quote: this.appendQuote,
+
+    callout: this.appendCallout,
+
+    h1: this.appendH1,
+
+    h2: this.appendH2,
+
+    h3: this.appendH3,
+
+    blItem: this.appendBLItem,
+
+    nlItem: this.appendNLItem,
+
+    toggleText: this.appendToggleText,
+  };
 }
-
-export const append = {
-  paragraph: appendParagraph,
-  toDo: appendToDo,
-  code: appendCode,
-  quote: appendQuote,
-
-  callout: appendCallout,
-
-  h1: appendH1,
-
-  h2: appendH2,
-
-  h3: appendH3,
-
-  blItem: appendBLItem,
-
-  nlItem: appendNLItem,
-
-  toggleText: appendToggleText,
-};

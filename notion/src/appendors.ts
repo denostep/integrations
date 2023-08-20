@@ -1,6 +1,5 @@
 import axiod from "https://deno.land/x/axiod/mod.ts";
-import { Notion } from "./notion.ts";
-import { Block } from "http://localhost:8000/src/provider/scheme/block.ts";
+
 import {
   BLItemBlock,
   CalloutBlock,

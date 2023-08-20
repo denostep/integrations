@@ -1,8 +1,6 @@
 import { Extractor } from "./extractors.ts";
-import Tuner from "https://deno.land/x/tuner@v0.1.4/mod.ts";
 import { Getter } from "./getters.ts";
 import { Appendor } from "./appendors.ts";
-import { urlToId } from "./helpers.ts";
 
 export class Notion {
   public key: string;
@@ -17,12 +15,12 @@ export class Notion {
   }
 }
 
-const n = new Notion({ key: Tuner.getEnv("NOTION_KEY") });
+// const n = new Notion({ key: Tuner.getEnv("NOTION_KEY") });
 
-const a = await n.appendor.appendParagraph(
-  urlToId.page(
-    "https://artpani.notion.site/d1ecc246b83e08a780b9a312548064?pvs=4",
-  ),
-  "ПРОВЕРКА",
-);
-console.log(a);
+// const a = await n.appendor.appendParagraph(
+//   urlToId.page(
+//     "https://artpani.notion.site/d1ecc246b83e08a780b9a312548064?pvs=4",
+//   ),
+//   "ПРОВЕРКА",
+// );
+// console.log(a);

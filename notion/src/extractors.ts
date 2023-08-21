@@ -21,6 +21,7 @@ import {
 import { urlToId } from "./helpers.ts";
 import { missingURLorID } from "./errors/mod.ts";
 import { Getter } from "./getters.ts";
+import { missingURLorIDorBlock } from "./errors/commonErrors.ts";
 
 function complieRichText(rc: RichText[]) {
   return rc.map((item) => item.text.content).join(" ");
@@ -103,7 +104,7 @@ export class Extractor {
   };
 
   public extractFromBlock = async (
-    options: { url?: string; id?: string },
+    options: { url?: string; id?: string; block?: Block },
   ) => {
     const getter = new Getter(this.key);
     const blockId = options.id
@@ -111,12 +112,44 @@ export class Extractor {
       : options.url
       ? urlToId.block(options.url)
       : undefined;
-    if (blockId === undefined) throw new missingURLorID();
-    const block = await getter.getBlockById(blockId);
+    if (blockId === undefined && !options.block) {
+      throw new missingURLorIDorBlock();
+    }
+    const blockInstance = options.block
+      ? options.block
+      : await getter.getBlockById(blockId!);
     try {
-      return this.extractFrom[block.type](block);
+      return this.extractFrom[blockInstance.type](blockInstance);
     } catch (e) {
       return null;
+    }
+  };
+
+  public extractTextFromBlock = async (block: Block) => {
+    const rawExtractResult = await this.extractFromBlock({ block });
+    switch (block.type) {
+      case "paragraph":
+      case "heading_1":
+      case "heading_2":
+      case "heading_3":
+      case "bulleted_list_item":
+      case "numbered_list_item":
+      case "toggle":
+      case "quote":
+        return rawExtractResult as string;
+      case "to_do":
+        return rawExtractResult.text as string;
+      case "code":
+        return rawExtractResult.code as string;
+      case "callout":
+        return rawExtractResult.text as string;
+      case "table":
+        return (rawExtractResult as string[][]).flatMap((innerArray) =>
+          innerArray.join("|")
+        )
+          .join("|");
+      default:
+        return "";
     }
   };
 }

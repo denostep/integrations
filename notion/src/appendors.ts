@@ -13,6 +13,7 @@ import {
   ToDoBlock,
   ToggleTextBlock,
 } from "./blockInterfaces.ts";
+import { CHAR_UNDERSCORE } from "https://deno.land/std@0.195.0/path/_constants.ts";
 
 export class Appendor {
   key: string;

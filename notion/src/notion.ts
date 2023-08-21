@@ -1,26 +1,21 @@
 import { Extractor } from "./extractors.ts";
 import { Getter } from "./getters.ts";
 import { Appendor } from "./appendors.ts";
+import Tuner from "https://deno.land/x/tuner@v0.1.4/mod.ts";
+import { urlToId } from "./helpers.ts";
+import { Behaviors } from "./behaviors.ts";
 
 export class Notion {
   public key: string;
   appendor: Appendor;
   extractor: Extractor;
   getter: Getter;
+  behavior: Behaviors;
   constructor(options: { key: string }) {
     this.key = options.key;
     this.appendor = new Appendor(this.key);
     this.extractor = new Extractor(this.key);
     this.getter = new Getter(this.key);
+    this.behavior = new Behaviors(this.key);
   }
 }
-
-// const n = new Notion({ key: Tuner.getEnv("NOTION_KEY") });
-
-// const a = await n.appendor.appendParagraph(
-//   urlToId.page(
-//     "https://artpani.notion.site/d1ecc246b83e08a780b9a312548064?pvs=4",
-//   ),
-//   "ПРОВЕРКА",
-// );
-// console.log(a);

@@ -10,21 +10,49 @@ export class Getter {
     this.key = key;
   }
 
+  // getBlocksByPage = async (
+  //   pageId: string,
+  //   size = 50,
+  //   client?: Client,
+  // ) => {
+  //   const cl = await maybeClient(client, this.key);
+  //   try {
+  //     const response = await cl.blocks.children.list({
+  //       block_id: pageId,
+  //       page_size: size,
+  //     });
+  //     return response.results as Block[];
+  //   } catch (e) {
+  //     throw new childrenListError();
+  //   }
+  // };
+
   getBlocksByPage = async (
     pageId: string,
     size = 50,
-    client?: Client,
+    cursor?: string | undefined,
   ) => {
-    const cl = await maybeClient(client, this.key);
-    try {
-      const response = await cl.blocks.children.list({
-        block_id: pageId,
-        page_size: size,
-      });
-      return response.results as Block[];
-    } catch (e) {
-      throw new childrenListError();
-    }
+    const res = await axiod.get(
+      `https://api.notion.com/v1/blocks/${pageId}/children${
+        cursor ? `?start_cursor=${cursor}` : ""
+      }`,
+      {
+        headers: {
+          "accept": "application/json",
+          "Notion-Version": "2022-06-28",
+          "content-type": "application/json",
+          "Authorization": `Bearer ${this.key}`,
+        },
+        params: {
+          page_size: size,
+        },
+      },
+    );
+    // console.log(res);
+    return {
+      blocks: res.data.results as Block[],
+      next_cursor: res.data.next_cursor as string | null,
+    };
   };
 
   getBlockById = async (
@@ -36,13 +64,28 @@ export class Getter {
     }) as unknown as Block;
   };
 
-  getFirstBlock = async (
-    pageId: string,
-    client?: Client,
-  ): Promise<Block> => {
-    const blocks = await this.getBlocksByPage(pageId, 1, client);
-    return blocks[0];
+  getNextBlock = async (
+    blockId: string,
+  ) => {
+    const curBlock = await this.getBlockById(blockId);
+    return (await this.getBlocksByPage(
+      curBlock.parent.page_id!,
+      1,
+      curBlock.id,
+    )).next_cursor;
   };
+
+  transformID = async (blockId: string) => {
+    return (await this.getBlockById(blockId)).id;
+  };
+
+  // getFirstBlock = async (
+  //   pageId: string,
+  //   client?: Client,
+  // ): Promise<Block> => {
+  //   const blocks = await this.getBlocksByPage(pageId, 1);
+  //   return blocks[0];
+  // };
 
   getChildren = async (
     blockId: string,

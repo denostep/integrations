@@ -1,17 +1,18 @@
-import { z } from 'https://deno.land/x/zod/mod.ts';
+import { z } from "https://deno.land/x/zod/mod.ts";
 
 export const configSchema = z.object({
   config: z.object({
-  pageId: z.string()
-}),
+    testPageID: z.string(),
+  }),
   env: z.object({
-  
-})
-})
+    NOTION_KEY: z.string(),
+  }),
+});
 
 export type Config = z.infer<typeof configSchema>;
 
 //├─ config
-//│  └─ pageId
+//│  └─ testPageID
 //└─ env
+//   └─ NOTION_KEY
 //

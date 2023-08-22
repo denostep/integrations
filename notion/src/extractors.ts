@@ -71,7 +71,7 @@ export class Extractor {
       complieRichText(block.toggle.rich_text),
     "code": (block: CodeBlock) => {
       return {
-        caption: complieRichText(block.code.caption),
+        caption: block.code.caption ? complieRichText(block.code.caption) : "",
         code: complieRichText(block.code.rich_text),
         language: block.code.language,
       };

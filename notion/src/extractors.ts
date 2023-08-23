@@ -1,4 +1,3 @@
-import { boolean, string } from "https://deno.land/x/zod@v3.21.4/types.ts";
 import {
   BLItemBlock,
   Block,
@@ -19,26 +18,12 @@ import {
   ToggleTextBlock,
 } from "./blockInterfaces.ts";
 import { urlToId } from "./helpers.ts";
-import { missingURLorID } from "./errors/mod.ts";
 import { Getter } from "./getters.ts";
 import { missingURLorIDorBlock } from "./errors/commonErrors.ts";
 
 function complieRichText(rc: RichText[]) {
   return rc.map((item) => item.text.content).join(" ");
 }
-
-type KindOfBlock =
-  | ParagraphBlock
-  | ToDoBlock
-  | H1Block
-  | H2Block
-  | H3Block
-  | BLItemBlock
-  | NLIBlock
-  | ToggleTextBlock
-  | CodeBlock
-  | QuoteBlock
-  | CalloutBlock;
 
 type ExtractFuncsList = {
   [key in BlockType]: (block: any) => any;

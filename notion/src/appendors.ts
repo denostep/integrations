@@ -13,7 +13,20 @@ import {
   ToDoBlock,
   ToggleTextBlock,
 } from "./blockInterfaces.ts";
-import { CHAR_UNDERSCORE } from "https://deno.land/std@0.195.0/path/_constants.ts";
+import { parseRichText } from "./helpers.ts";
+
+type TypedDataBlock =
+  | Partial<ParagraphBlock>
+  | Partial<ToDoBlock>
+  | Partial<CodeBlock>
+  | Partial<H1Block>
+  | Partial<H2Block>
+  | Partial<H3Block>
+  | Partial<BLItemBlock>
+  | Partial<NLIBlock>
+  | Partial<CalloutBlock>
+  | Partial<QuoteBlock>
+  | Partial<ToggleTextBlock>;
 
 export class Appendor {
   key: string;
@@ -34,10 +47,18 @@ export class Appendor {
         },
       },
     );
-    console.log(res);
+    // console.log(res);
     if (res.status === 200) return res.data.results;
     // throw new Error(res.statusText);
   };
+  makeParagraphBlock(text: string) {
+    const maybeText = parseRichText(text);
+    return {
+      "paragraph": {
+        "rich_text": maybeText,
+      },
+    } as Partial<ParagraphBlock>;
+  }
 
   appendParagraph = async (
     blockId: string,
@@ -45,23 +66,21 @@ export class Appendor {
     after?: string,
   ) => {
     const data = {
-      children: [
-        {
-          "paragraph": {
-            "rich_text": [
-              {
-                "text": {
-                  "content": text,
-                },
-              },
-            ],
-          },
-        },
-      ],
+      children: [this.makeParagraphBlock(text)],
       after,
     };
     return (await this.appendBlock(blockId, data))[0] as ParagraphBlock;
   };
+
+  makeToDoBlock(text: string, checked: boolean) {
+    const maybeText = parseRichText(text);
+    return {
+      "to_do": {
+        "rich_text": maybeText,
+        "checked": checked,
+      },
+    } as Partial<ToDoBlock>;
+  }
 
   appendToDo = async (
     blockId: string,
@@ -70,24 +89,21 @@ export class Appendor {
     after?: string,
   ) => {
     const data = {
-      children: [
-        {
-          "to_do": {
-            "rich_text": [
-              {
-                "text": {
-                  "content": text,
-                },
-              },
-            ],
-            "checked": checked,
-          },
-        },
-      ],
+      children: [this.makeToDoBlock(text, checked)],
       after,
     };
     return (await this.appendBlock(blockId, data))[0] as ToDoBlock;
   };
+
+  makeCodeBlock(text: string, language: string) {
+    const maybeText = parseRichText(text);
+    return {
+      "code": {
+        "rich_text": maybeText,
+        "language": language,
+      },
+    } as Partial<CodeBlock>;
+  }
 
   appendCode = async (
     blockId: string,
@@ -96,24 +112,20 @@ export class Appendor {
     after?: string,
   ) => {
     const data = {
-      children: [
-        {
-          "code": {
-            "rich_text": [
-              {
-                "text": {
-                  "content": text,
-                },
-              },
-            ],
-            "language": language,
-          },
-        },
-      ],
+      children: [this.makeCodeBlock(text, language)],
       after,
     };
     return (await this.appendBlock(blockId, data))[0] as CodeBlock;
   };
+
+  makeQuoteBlock(text: string) {
+    const maybeText = parseRichText(text);
+    return {
+      "quote": {
+        "rich_text": maybeText,
+      },
+    } as Partial<QuoteBlock>;
+  }
 
   appendQuote = async (
     blockId: string,
@@ -121,23 +133,24 @@ export class Appendor {
     after?: string,
   ) => {
     const data = {
-      children: [
-        {
-          "quote": {
-            "rich_text": [
-              {
-                "text": {
-                  "content": text,
-                },
-              },
-            ],
-          },
-        },
-      ],
+      children: [this.makeQuoteBlock(text)],
       after,
     };
     return (await this.appendBlock(blockId, data))[0] as QuoteBlock;
   };
+
+  makeCalloutBlock(text: string, icon: string) {
+    const maybeText = parseRichText(text);
+    return {
+      "callout": {
+        "rich_text": maybeText,
+        "icon": {
+          type: "emoji",
+          emoji: icon,
+        },
+      },
+    } as Partial<CalloutBlock>;
+  }
 
   appendCallout = async (
     blockId: string,
@@ -146,27 +159,22 @@ export class Appendor {
     after?: string,
   ) => {
     const data = {
-      children: [
-        {
-          "callout": {
-            "rich_text": [
-              {
-                "text": {
-                  "content": text,
-                },
-              },
-            ],
-            "icon": {
-              type: "emoji",
-              emoji: icon,
-            },
-          },
-        },
-      ],
+      children: [this.makeCalloutBlock(text, icon)],
       after,
     };
+
     return (await this.appendBlock(blockId, data))[0] as CalloutBlock;
   };
+
+  makeH1Block(text: string) {
+    const maybeText = parseRichText(text);
+    return {
+      "heading_1": {
+        "rich_text": maybeText,
+        "is_toggleable": false,
+      },
+    } as Partial<H1Block>;
+  }
 
   appendH1 = async (
     blockId: string,
@@ -174,24 +182,21 @@ export class Appendor {
     after?: string,
   ) => {
     const data = {
-      children: [
-        {
-          "heading_1": {
-            "rich_text": [
-              {
-                "text": {
-                  "content": text,
-                },
-              },
-            ],
-            "is_toggleable": false,
-          },
-        },
-      ],
+      children: [this.makeH1Block(text)],
       after,
     };
     return (await this.appendBlock(blockId, data))[0] as H1Block;
   };
+
+  makeH2Block(text: string) {
+    const maybeText = parseRichText(text);
+    return {
+      "heading_2": {
+        "rich_text": maybeText,
+        "is_toggleable": false,
+      },
+    } as Partial<H2Block>;
+  }
 
   appendH2 = async (
     blockId: string,
@@ -199,24 +204,21 @@ export class Appendor {
     after?: string,
   ) => {
     const data = {
-      children: [
-        {
-          "heading_2": {
-            "rich_text": [
-              {
-                "text": {
-                  "content": text,
-                },
-              },
-            ],
-            "is_toggleable": false,
-          },
-        },
-      ],
+      children: [this.makeH2Block(text)],
       after,
     };
     return (await this.appendBlock(blockId, data))[0] as H2Block;
   };
+
+  makeH3Block(text: string) {
+    const maybeText = parseRichText(text);
+    return {
+      "heading_3": {
+        "rich_text": maybeText,
+        "is_toggleable": false,
+      },
+    } as Partial<H3Block>;
+  }
 
   appendH3 = async (
     blockId: string,
@@ -224,24 +226,20 @@ export class Appendor {
     after?: string,
   ) => {
     const data = {
-      children: [
-        {
-          "heading_3": {
-            "rich_text": [
-              {
-                "text": {
-                  "content": text,
-                },
-              },
-            ],
-            "is_toggleable": false,
-          },
-        },
-      ],
+      children: [this.makeH3Block(text)],
       after,
     };
     return (await this.appendBlock(blockId, data))[0] as H3Block;
   };
+
+  makeBLItemBlock(text: string) {
+    const maybeText = parseRichText(text);
+    return {
+      "bulleted_list_item": {
+        "rich_text": maybeText,
+      },
+    } as Partial<BLItemBlock>;
+  }
 
   appendBLItem = async (
     blockId: string,
@@ -249,47 +247,41 @@ export class Appendor {
     after?: string,
   ) => {
     const data = {
-      children: [
-        {
-          "bulleted_list_item": {
-            "rich_text": [
-              {
-                "text": {
-                  "content": text,
-                },
-              },
-            ],
-          },
-        },
-      ],
+      children: [this.makeBLItemBlock(text)],
       after,
     };
     return (await this.appendBlock(blockId, data))[0] as BLItemBlock;
   };
 
+  makeNLItemBlock(text: string) {
+    const maybeText = parseRichText(text);
+    return {
+      "numbered_list_item": {
+        "rich_text": maybeText,
+      },
+    } as Partial<NLIBlock>;
+  }
   appendNLItem = async (
     blockId: string,
     text: string,
     after?: string,
   ) => {
     const data = {
-      children: [
-        {
-          "numbered_list_item": {
-            "rich_text": [
-              {
-                "text": {
-                  "content": text,
-                },
-              },
-            ],
-          },
-        },
-      ],
+      children: [this.makeNLItemBlock(text)],
       after,
     };
+
     return (await this.appendBlock(blockId, data))[0] as NLIBlock;
   };
+
+  makeToggleTextBlock(text: string) {
+    const maybeText = parseRichText(text);
+    return {
+      "toggle": {
+        "rich_text": maybeText,
+      },
+    } as Partial<ToggleTextBlock>;
+  }
 
   appendToggleText = async (
     blockId: string,
@@ -297,22 +289,36 @@ export class Appendor {
     after?: string,
   ) => {
     const data = {
-      children: [
-        {
-          "toggle": {
-            "rich_text": [
-              {
-                "text": {
-                  "content": text,
-                },
-              },
-            ],
-          },
-        },
-      ],
+      children: [this.makeToggleTextBlock(text)],
       after,
     };
+
     return (await this.appendBlock(blockId, data))[0] as ToggleTextBlock;
+  };
+
+  appendMultipleBlocks = async (
+    blockId: string,
+    blocksData: TypedDataBlock[],
+  ) => {
+    return (await this.appendBlock(blockId, { children: blocksData }));
+  };
+
+  appendColumn = async (
+    blockId: string,
+    blocksData: TypedDataBlock[],
+  ) => {
+    const columns = [];
+    for (const block of blocksData) {
+      columns.push({
+        "column": { children: [block] },
+      });
+    }
+    const data = {
+      children: [{ "column_list": { children: columns } }],
+    };
+    console.log(data.children[0]);
+
+    return (await this.appendBlock(blockId, data));
   };
 
   append = {
@@ -336,3 +342,8 @@ export class Appendor {
     toggleText: this.appendToggleText,
   };
 }
+
+// (new Appendor("kjk")).appendMultipleBlocks(
+//   "knkn",
+//   await (new Appendor("kmkm").appendParagraph("оиои", "knkn", "", true)),
+// );

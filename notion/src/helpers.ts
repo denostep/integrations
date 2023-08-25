@@ -1,5 +1,6 @@
 import Client from "https://deno.land/x/notion_sdk@v2.2.3/src/Client.ts";
 import { urlToIdError } from "./errors/formatErrors.ts";
+import { RichText } from "./blockInterfaces.ts";
 
 export const urlToId = {
   page: (url: string): string => {
@@ -24,6 +25,80 @@ export const urlToId = {
     }
   },
 };
+
+export function parseRichText(str: string): RichText[] {
+  const regex = /_{{(.*?)}}_/gs;
+  const result: RichText[] = [];
+  let lastIndex = 0;
+  // throw new Error("not implemented");
+  let match;
+  while ((match = regex.exec(str)) !== null) {
+    const plainText = str.slice(lastIndex, match.index);
+    if (plainText) {
+      result.push({
+        type: "text",
+        text: { content: plainText, link: null },
+        annotations: {
+          bold: false,
+          italic: false,
+          strikethrough: false,
+          underline: false,
+          code: false,
+          color: "default",
+        },
+        plain_text: plainText,
+        href: null,
+      });
+    }
+
+    const [, format] = match;
+    const [flagsPart, textPart] = format.split(":");
+    const flags = flagsPart.split(" ").map((flag) => flag.trim().toUpperCase());
+    const text = textPart.trim();
+
+    const annotations = {
+      bold: flags.includes("BOLD"),
+      italic: flags.includes("ITALIC"),
+      strikethrough: flags.includes("STRIKETHROUGH"),
+      underline: flags.includes("UNDERLINE"),
+      code: flags.includes("CODE"),
+      color: flags.find((flag) =>
+        flag.startsWith("COLOR=")
+      )?.split("=")[1].toLowerCase() ||
+        "default",
+    };
+
+    result.push({
+      type: "text",
+      text: { content: text, link: null },
+      annotations: annotations,
+      plain_text: text,
+      href: null,
+    });
+
+    lastIndex = regex.lastIndex;
+  }
+
+  const remainingText = str.slice(lastIndex);
+  if (remainingText) {
+    result.push({
+      type: "text",
+      text: { content: remainingText, link: null },
+      annotations: {
+        bold: false,
+        italic: false,
+        strikethrough: false,
+        underline: false,
+        code: false,
+        color: "default",
+      },
+      plain_text: remainingText,
+      href: null,
+    });
+  }
+
+  return result;
+}
 
 export async function maybeClient(client: Client | undefined, key: string) {
   return client ||

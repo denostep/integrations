@@ -26,7 +26,14 @@ export const urlToId = {
   },
 };
 
+function wrapLinksInBlocks(text: string) {
+  const regex = /(https?:\/\/[^\s]+)/g;
+  return text.replace(regex, "_{{LINK=$1:: $1}}_");
+}
+
 export function parseRichText(str: string): RichText[] {
+  str = wrapLinksInBlocks(str);
+  console.log(str);
   const regex = /_{{(.*?)}}_/gs;
   const result: RichText[] = [];
   let lastIndex = 0;
@@ -52,8 +59,8 @@ export function parseRichText(str: string): RichText[] {
     }
 
     const [, format] = match;
-    const splitted = format.split(":");
-    const [flagsPart, textPart] = [splitted[0], splitted.slice(1).join(":")];
+    const splitted = format.split("::");
+    const [flagsPart, textPart] = [splitted[0], splitted.slice(1).join("::")];
     const flags = flagsPart.split(" ").map((flag) => flag.trim().toUpperCase());
     const text = textPart.trim();
 
@@ -68,10 +75,14 @@ export function parseRichText(str: string): RichText[] {
       )?.split("=")[1].toLowerCase() ||
         "default",
     };
-
+    const url = flags.find((flag) => flag.startsWith("LINK="))?.split("=")[1]
+      .toLowerCase();
     result.push({
       type: "text",
-      text: { content: text, link: null },
+      text: {
+        content: text,
+        link: url ? { url } : null,
+      },
       annotations: annotations,
       plain_text: text,
       href: null,
@@ -97,7 +108,7 @@ export function parseRichText(str: string): RichText[] {
       href: null,
     });
   }
-
+  console.log(result);
   return result;
 }
 

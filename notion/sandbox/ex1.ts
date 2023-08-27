@@ -52,6 +52,7 @@ const dateString = `${date.getDate()}.${
 //   "\\color{a9d6e5}\\rule{775px}{3px}",
 // );
 
-// console.log(parseRichText(
-//   `_{{BOLD COLOR=red: Время 12:45}}_-ололо _{{COLOR=blue: А тут вообще :::}}_`,
-// ));
+await notion.appendor.append.paragraph(
+  config.config.testPageID,
+  `_{{BOLD COLOR=red:: Время 12:45 http://yandex.ru}}_-ололо http://yandex.ru  _{{COLOR=blue:: А тут вообще :::}}_`,
+);

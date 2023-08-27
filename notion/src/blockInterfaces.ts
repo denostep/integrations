@@ -34,7 +34,7 @@ export type BlockType =
 
 export type RichText = {
   type: string;
-  text: { content: string; link: null | string };
+  text: { content: string; link: null | string | { url: string | null } };
   annotations: {
     bold: boolean;
     italic: boolean;

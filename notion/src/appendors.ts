@@ -337,7 +337,7 @@ export class Appendor {
     const data = {
       children: [{ "column_list": { children: columns } }],
     };
-    console.log(data.children[0]);
+    // console.log(data.children[0]);
 
     return (await this.appendBlock(blockId, data));
   };

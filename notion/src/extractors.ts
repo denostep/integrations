@@ -5,6 +5,7 @@ import {
   CalloutBlock,
   CodeBlock,
   DividerBlock,
+  EquationBlock,
   H1Block,
   H2Block,
   H3Block,
@@ -86,6 +87,7 @@ export class Extractor {
     },
     "divider": (block: DividerBlock) => block.id,
     table_row: (block: TableRow) => block.id,
+    "equation": (block: EquationBlock) => block.equation.expression,
   };
 
   public extractFromBlock = async (
@@ -121,6 +123,7 @@ export class Extractor {
       case "numbered_list_item":
       case "toggle":
       case "quote":
+      case "equation":
         return rawExtractResult as string;
       case "to_do":
         return rawExtractResult.text as string;

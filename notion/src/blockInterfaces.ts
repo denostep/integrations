@@ -1,36 +1,36 @@
 export type BlockType =
   // | 'bookmark'
   // | 'breadcrumb'
-  | 'bulleted_list_item'
-  | 'callout'
+  | "bulleted_list_item"
+  | "callout"
   // | 'child_database'
   // | 'child_page'
   // | 'column'
   // | 'column_list'
-  | 'divider'
+  | "divider"
   // | 'embed'
-  // | 'equation'
+  | "equation"
   // | 'file'
-  | 'heading_1'
-  | 'heading_2'
-  | 'heading_3'
+  | "heading_1"
+  | "heading_2"
+  | "heading_3"
   // | 'image'
   // | 'link_preview'
   // | 'link_to_page'
-  | 'numbered_list_item'
-  | 'paragraph'
+  | "numbered_list_item"
+  | "paragraph"
   // | 'pdf'
-  | 'quote'
+  | "quote"
   // | 'synced_block'
-  | 'table'
+  | "table"
   // | 'table_of_contents'
-  | 'table_row'
+  | "table_row"
   // | 'template'
-  | 'to_do'
-  | 'toggle'
+  | "to_do"
+  | "toggle"
   // | 'unsupported'
   // | 'video'
-  | 'code';
+  | "code";
 
 export type RichText = {
   type: string;
@@ -48,14 +48,14 @@ export type RichText = {
 };
 
 export interface User {
-  object: 'user';
+  object: "user";
   id: string;
-  type: 'person' | 'bot';
+  type: "person" | "bot";
   name: string;
   avatar_url: string;
 }
 export interface Block {
-  object: 'block';
+  object: "block";
   id: string;
   parent: {
     type: string;
@@ -74,14 +74,14 @@ export interface Block {
 }
 
 export interface ParagraphBlock extends Block {
-  type: 'paragraph';
+  type: "paragraph";
   paragraph: {
     rich_text: RichText[];
   };
 }
 
 export interface ToDoBlock extends Block {
-  type: 'to_do';
+  type: "to_do";
   to_do: {
     rich_text: RichText[];
     checked: boolean;
@@ -89,7 +89,7 @@ export interface ToDoBlock extends Block {
 }
 
 export interface H1Block extends Block {
-  type: 'heading_1';
+  type: "heading_1";
 
   heading_1: {
     rich_text: RichText[];
@@ -98,7 +98,7 @@ export interface H1Block extends Block {
 }
 
 export interface H2Block extends Block {
-  type: 'heading_1';
+  type: "heading_1";
 
   heading_2: {
     rich_text: RichText[];
@@ -107,7 +107,7 @@ export interface H2Block extends Block {
 }
 
 export interface H3Block extends Block {
-  type: 'heading_1';
+  type: "heading_1";
 
   heading_3: {
     rich_text: RichText[];
@@ -116,7 +116,7 @@ export interface H3Block extends Block {
 }
 
 export interface TableBlock extends Block {
-  type: 'table';
+  type: "table";
   table: {
     table_width: number;
     has_column_header: boolean;
@@ -125,27 +125,27 @@ export interface TableBlock extends Block {
 }
 
 export interface BLItemBlock extends Block {
-  type: 'bulleted_list_item';
+  type: "bulleted_list_item";
   bulleted_list_item: {
     rich_text: RichText[];
   };
 }
 export interface NLIBlock extends Block {
-  type: 'numbered_list_item';
+  type: "numbered_list_item";
   numbered_list_item: {
     rich_text: RichText[];
   };
 }
 
 export interface ToggleTextBlock extends Block {
-  type: 'toggle';
+  type: "toggle";
   toggle: {
     rich_text: RichText[];
   };
 }
 
 export interface CodeBlock extends Block {
-  type: 'code';
+  type: "code";
   code: {
     caption: RichText[];
     rich_text: RichText[];
@@ -154,23 +154,30 @@ export interface CodeBlock extends Block {
 }
 
 export interface QuoteBlock extends Block {
-  type: 'quote';
+  type: "quote";
   quote: {
     rich_text: RichText[];
   };
 }
 
 export interface DividerBlock extends Block {
-  type: 'divider';
+  type: "divider";
   divider: {};
 }
 
+export interface EquationBlock extends Block {
+  type: "equation";
+  equation: {
+    expression: string;
+  };
+}
+
 export interface CalloutBlock extends Block {
-  type: 'callout';
+  type: "callout";
   callout: {
     rich_text: RichText[];
     icon: {
-      type: 'emoji' | 'external';
+      type: "emoji" | "external";
       emoji?: string;
       external?: { url: string };
     };
@@ -178,7 +185,7 @@ export interface CalloutBlock extends Block {
 }
 
 export interface TableRow extends Block {
-  type: 'table_row';
+  type: "table_row";
   table_row: {
     cells: RichText[][];
   };

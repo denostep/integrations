@@ -4,6 +4,7 @@ import {
   BLItemBlock,
   CalloutBlock,
   CodeBlock,
+  EquationBlock,
   H1Block,
   H2Block,
   H3Block,
@@ -26,8 +27,8 @@ type TypedDataBlock =
   | Partial<NLIBlock>
   | Partial<CalloutBlock>
   | Partial<QuoteBlock>
-  | Partial<ToggleTextBlock>;
-
+  | Partial<ToggleTextBlock>
+  | Partial<EquationBlock>;
 export class Appendor {
   key: string;
   constructor(key: string) {
@@ -296,6 +297,26 @@ export class Appendor {
     return (await this.appendBlock(blockId, data))[0] as ToggleTextBlock;
   };
 
+  makeEquationBlock = (equation: string) => {
+    return {
+      "equation": {
+        "expression": equation,
+      },
+    } as Partial<EquationBlock>;
+  };
+
+  appendEquationBlock = async (
+    blockId: string,
+    equation: string,
+    after?: string,
+  ) => {
+    const data = {
+      children: [this.makeEquationBlock(equation)],
+      after,
+    };
+    return (await this.appendBlock(blockId, data))[0] as EquationBlock;
+  };
+
   appendMultipleBlocks = async (
     blockId: string,
     blocksData: TypedDataBlock[],
@@ -340,6 +361,8 @@ export class Appendor {
     nlItem: this.appendNLItem,
 
     toggleText: this.appendToggleText,
+
+    equation: this.appendEquationBlock,
   };
 }
 

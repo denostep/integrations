@@ -33,7 +33,7 @@ function wrapLinksInBlocks(text: string) {
 
 export function parseRichText(str: string): RichText[] {
   str = wrapLinksInBlocks(str);
-  console.log(str);
+  // console.log(str);
   const regex = /_{{(.*?)}}_/gs;
   const result: RichText[] = [];
   let lastIndex = 0;
@@ -108,7 +108,7 @@ export function parseRichText(str: string): RichText[] {
       href: null,
     });
   }
-  console.log(result);
+  // console.log(result);
   return result;
 }
 

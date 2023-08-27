@@ -52,7 +52,8 @@ export function parseRichText(str: string): RichText[] {
     }
 
     const [, format] = match;
-    const [flagsPart, textPart] = format.split(":");
+    const splitted = format.split(":");
+    const [flagsPart, textPart] = [splitted[0], splitted.slice(1).join(":")];
     const flags = flagsPart.split(" ").map((flag) => flag.trim().toUpperCase());
     const text = textPart.trim();
 

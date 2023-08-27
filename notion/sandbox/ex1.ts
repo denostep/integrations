@@ -47,7 +47,11 @@ const dateString = `${date.getDate()}.${
 // } catch (e) {
 //   console.log(e.response.data.message);
 // }
-await notion.appendor.append.equation(
-  config.config.testPageID,
-  "\\color{a9d6e5}\\rule{775px}{3px}",
-);
+// await notion.appendor.append.equation(
+//   config.config.testPageID,
+//   "\\color{a9d6e5}\\rule{775px}{3px}",
+// );
+
+// console.log(parseRichText(
+//   `_{{BOLD COLOR=red: Время 12:45}}_-ололо _{{COLOR=blue: А тут вообще :::}}_`,
+// ));

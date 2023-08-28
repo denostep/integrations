@@ -20,6 +20,12 @@ const dateString = `${date.getDate()}.${
 // );
 // console.log(a);
 // try {
+//   const firstBlock = (await notion.getter.getBlocksByPage(
+//     urlToId.page(
+//       "https://artpani.notion.site/d1ecc246b8304e08a780b9a312548064?pvs=4",
+//     ),
+//     1,
+//   )).blocks[0];
 //   const b = await notion.appendor.appendColumn(
 //     urlToId.page(
 //       "https://artpani.notion.site/d1ecc246b8304e08a780b9a312548064?pvs=4",
@@ -30,17 +36,13 @@ const dateString = `${date.getDate()}.${
 //       https://t.me/arthur_salesunicorns`),
 //       notion.appendor.makeCalloutBlock(
 //         `Сохранил и написал:
-// _{{COLOR=red: Артем Панов (@artpani)}}_
-// _{{COLOR=green: 23.8.2023 в 12:53")}}_`,
+// _{{COLOR=red:: Артем Панов (@artpani)}}_
+// _{{COLOR=green:: 23.8.2023 в 12:53")}}_`,
 //         "🕓",
 //       ),
 //       notion.appendor.makeQuoteBlock("OLOLO"),
-//       notion.appendor.makeQuoteBlock("OLOLO 2"),
-//       notion.appendor.makeQuoteBlock("OLOLO 3"),
-//       notion.appendor.makeQuoteBlock("OLOLO 4"),
-//       notion.appendor.makeQuoteBlock("OLOLO 5 "),
-//       notion.appendor.makeQuoteBlock("OLOLO 6"),
 //     ],
+//     firstBlock.id,
 //   );
 
 //   console.log(b);
@@ -52,7 +54,7 @@ const dateString = `${date.getDate()}.${
 //   "\\color{a9d6e5}\\rule{775px}{3px}",
 // );
 
-await notion.appendor.append.paragraph(
-  config.config.testPageID,
-  `_{{BOLD COLOR=red:: Время 12:45 http://yandex.ru}}_-ололо http://yandex.ru  _{{COLOR=blue:: А тут вообще :::}}_`,
-);
+// await notion.appendor.append.paragraph(
+//   config.config.testPageID,
+//   `_{{BOLD COLOR=red:: Время 12:45 http://yandex.ru}}_-ололо http://yandex.ru  _{{COLOR=blue:: А тут вообще :::}}_`,
+// );

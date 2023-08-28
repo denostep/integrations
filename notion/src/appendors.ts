@@ -327,6 +327,7 @@ export class Appendor {
   appendColumn = async (
     blockId: string,
     blocksData: TypedDataBlock[],
+    after?: string,
   ) => {
     const columns = [];
     for (const block of blocksData) {
@@ -336,6 +337,7 @@ export class Appendor {
     }
     const data = {
       children: [{ "column_list": { children: columns } }],
+      after,
     };
     // console.log(data.children[0]);
 

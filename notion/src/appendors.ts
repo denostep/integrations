@@ -339,9 +339,10 @@ export class Appendor {
       children: [{ "column_list": { children: columns } }],
       after,
     };
+    console.log(data);
     // console.log(data.children[0]);
 
-    return (await this.appendBlock(blockId, data));
+    return (await this.appendBlock(blockId, data))[0][0];
   };
 
   append = {

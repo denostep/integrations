@@ -19,36 +19,28 @@ const dateString = `${date.getDate()}.${
 // ),
 // );
 // console.log(a);
-// try {
-//   const firstBlock = (await notion.getter.getBlocksByPage(
-//     urlToId.page(
-//       "https://artpani.notion.site/d1ecc246b8304e08a780b9a312548064?pvs=4",
-//     ),
-//     1,
-//   )).blocks[0];
-//   const b = await notion.appendor.appendColumn(
-//     urlToId.page(
-//       "https://artpani.notion.site/d1ecc246b8304e08a780b9a312548064?pvs=4",
-//     ),
-//     [
-//       notion.appendor.makeParagraphBlock(`на всякий засейвю здесь:
-//       контакт Артура b2b продажи
-//       https://t.me/arthur_salesunicorns`),
-//       notion.appendor.makeCalloutBlock(
-//         `Сохранил и написал:
-// _{{COLOR=red:: Артем Панов (@artpani)}}_
-// _{{COLOR=green:: 23.8.2023 в 12:53")}}_`,
-//         "🕓",
-//       ),
-//       notion.appendor.makeQuoteBlock("OLOLO"),
-//     ],
-//     firstBlock.id,
-//   );
+try {
+  const firstBlock = (await notion.getter.getBlocksByPage(
+    urlToId.page(
+      "https://artpani.notion.site/d1ecc246b8304e08a780b9a312548064?pvs=4",
+    ),
+    1,
+  )).blocks[0];
+  const b = await notion.appendor.appendColumn(
+    urlToId.page(
+      "https://artpani.notion.site/d1ecc246b8304e08a780b9a312548064?pvs=4",
+    ),
+    [
+      notion.appendor.makeCalloutBlock("OLOLO", "🚾"),
+      notion.appendor.makeH1Block("TROLOLO"),
+    ],
+    firstBlock.id,
+  );
 
-//   console.log(b);
-// } catch (e) {
-//   console.log(e.response.data.message);
-// }
+  console.log(b);
+} catch (e) {
+  console.log(e.response.data.message);
+}
 // await notion.appendor.append.equation(
 //   config.config.testPageID,
 //   "\\color{a9d6e5}\\rule{775px}{3px}",

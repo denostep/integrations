@@ -1,16 +1,49 @@
-import Tuner from "https://deno.land/x/tuner@v0.1.4/mod.ts";
-import { Config } from "./config/configSchema.ts";
-import Notion from "../mod.ts";
-import { ParagraphBlock, RichText } from "../src/blockInterfaces.ts";
-import { parseRichText, urlToId } from "../src/helpers.ts";
+import Tuner from 'https://deno.land/x/tuner@v0.1.4/mod.ts';
+import { Config } from './config/configSchema.ts';
+import Notion from '../mod.ts';
+import { ParagraphBlock, RichText } from '../src/blockInterfaces.ts';
+import { parseRichText, urlToId } from '../src/helpers.ts';
 
 const config = await Tuner.use.loadConfig() as Config;
-const notion = new Notion({ key: Tuner.getEnv("NOTION_KEY") });
+const notion = new Notion({ key: Tuner.getEnv('NOTION_KEY') });
+try {
+  const [data, error] = await notion.getter.getChildren(
+    urlToId.block(
+      'https://www.notion.so/artpani/d1ecc246b8304e08a780b9a312548064?pvs=4#dd73306362ef4d898e552930836a441b',
+    ),
+  );
+  if (error) throw error;
+  console.log(data!);
+} catch (e) {
+  console.log(e.message);
+}
 
-const date = new Date();
-const dateString = `${date.getDate()}.${
-  date.getMonth() + 1
-}.${date.getFullYear()}`;
+// const page = await notion.appendor.append.page(
+//   urlToId.page(
+//     'https://salty-oxygen-60d.notion.site/Getting-Started-8374d068e390468f9462a846cfc921d7?pvs=4',
+//   ),
+//   'Привет',
+// );
+
+// for (let i = 689; i < 3000; i++) {
+//   try {
+//     await notion.appendor.append.page(
+//       urlToId.page(
+//         'https://salty-oxygen-60d.notion.site/Getting-Started-8374d068e390468f9462a846cfc921d7?pvs=4',
+//       ),
+//       `Привет ${i}`,
+//     );
+//   } catch (e) {
+//     console.log(`${i} НЕ СМОГ ОТПРАВИТЬ`);
+//     console.log(e);
+//   }
+// }
+
+// console.log(page);
+// const date = new Date();
+// const dateString = `${date.getDate()}.${
+//   date.getMonth() + 1
+// }.${date.getFullYear()}`;
 
 // const a = await notion.getter.getBlockById(
 //   "06560e84-eee5-45a9-a474-6ba1be9ba5dd",

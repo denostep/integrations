@@ -17,13 +17,14 @@ import {
   TableRow,
   ToDoBlock,
   ToggleTextBlock,
-} from "./blockInterfaces.ts";
-import { urlToId } from "./helpers.ts";
-import { Getter } from "./getters.ts";
-import { missingURLorIDorBlock } from "./errors/commonErrors.ts";
+} from './blockInterfaces.ts';
+import { urlToId } from './helpers.ts';
+import { Getter } from './getters.ts';
+import { missingURLorIDorBlock } from './errors/commonErrors.ts';
+import { Fetchify } from 'https://deno.land/x/fetchify@0.2.10/src/fetchify.ts';
 
 function complieRichText(rc: RichText[]) {
-  return rc.map((item) => item.text.content).join(" ");
+  return rc.map((item) => item.text.content).join(' ');
 }
 
 type ExtractFuncsList = {
@@ -31,48 +32,58 @@ type ExtractFuncsList = {
 };
 
 export class Extractor {
-  private key: string;
-  constructor(key: string) {
+  net: Fetchify;
+  key: string;
+  baseURL: string;
+  constructor(key: string, net: Fetchify, baseURL: string) {
     this.key = key;
+    this.net = net;
+    this.baseURL = baseURL;
   }
 
   public extractFrom: ExtractFuncsList = {
-    "paragraph": (block: ParagraphBlock) =>
+    'paragraph': (block: ParagraphBlock) =>
       complieRichText(block.paragraph.rich_text),
-    "to_do": (block: ToDoBlock) => {
+    'to_do': (block: ToDoBlock) => {
       return {
         checked: block.to_do.checked,
         text: complieRichText(block.to_do.rich_text),
       };
     },
 
-    "heading_1": (block: H1Block) => complieRichText(block.heading_1.rich_text),
-    "heading_2": (block: H2Block) => complieRichText(block.heading_2.rich_text),
-    "heading_3": (block: H3Block) => complieRichText(block.heading_3.rich_text),
-    "bulleted_list_item": (block: BLItemBlock) =>
+    'heading_1': (block: H1Block) =>
+      complieRichText(block.heading_1.rich_text),
+    'heading_2': (block: H2Block) =>
+      complieRichText(block.heading_2.rich_text),
+    'heading_3': (block: H3Block) =>
+      complieRichText(block.heading_3.rich_text),
+    'bulleted_list_item': (block: BLItemBlock) =>
       complieRichText(block.bulleted_list_item.rich_text),
-    "numbered_list_item": (block: NLIBlock) =>
+    'numbered_list_item': (block: NLIBlock) =>
       complieRichText(block.numbered_list_item.rich_text),
-    "toggle": (block: ToggleTextBlock) =>
+    'toggle': (block: ToggleTextBlock) =>
       complieRichText(block.toggle.rich_text),
-    "code": (block: CodeBlock) => {
+    'code': (block: CodeBlock) => {
       return {
-        caption: block.code.caption ? complieRichText(block.code.caption) : "",
+        caption: block.code.caption
+          ? complieRichText(block.code.caption)
+          : '',
         code: complieRichText(block.code.rich_text),
         language: block.code.language,
       };
     },
 
-    "quote": (block: QuoteBlock) => complieRichText(block.quote.rich_text),
-    "callout": (block: CalloutBlock) => {
+    'quote': (block: QuoteBlock) =>
+      complieRichText(block.quote.rich_text),
+    'callout': (block: CalloutBlock) => {
       return {
         text: complieRichText(block.callout.rich_text),
-        icon: block.callout.icon.type === "emoji"
+        icon: block.callout.icon.type === 'emoji'
           ? block.callout.icon.emoji
           : block.callout.icon.external!.url,
       };
     },
-    "table": async (block: TableBlock) => {
+    'table': async (block: TableBlock) => {
       const get = new Getter(this.key);
       const res: string[][] = [];
       const rows = (await get.getChildren(block.id)) as TableRow[];
@@ -85,9 +96,9 @@ export class Extractor {
       }
       return res;
     },
-    "divider": (block: DividerBlock) => block.id,
+    'divider': (block: DividerBlock) => block.id,
     table_row: (block: TableRow) => block.id,
-    "equation": (block: EquationBlock) => block.equation.expression,
+    'equation': (block: EquationBlock) => block.equation.expression,
   };
 
   public extractFromBlock = async (
@@ -115,29 +126,29 @@ export class Extractor {
   public extractTextFromBlock = async (block: Block) => {
     const rawExtractResult = await this.extractFromBlock({ block });
     switch (block.type) {
-      case "paragraph":
-      case "heading_1":
-      case "heading_2":
-      case "heading_3":
-      case "bulleted_list_item":
-      case "numbered_list_item":
-      case "toggle":
-      case "quote":
-      case "equation":
+      case 'paragraph':
+      case 'heading_1':
+      case 'heading_2':
+      case 'heading_3':
+      case 'bulleted_list_item':
+      case 'numbered_list_item':
+      case 'toggle':
+      case 'quote':
+      case 'equation':
         return rawExtractResult as string;
-      case "to_do":
+      case 'to_do':
         return rawExtractResult.text as string;
-      case "code":
+      case 'code':
         return rawExtractResult.code as string;
-      case "callout":
+      case 'callout':
         return rawExtractResult.text as string;
-      case "table":
-        return (rawExtractResult as string[][]).flatMap((innerArray) =>
-          innerArray.join("|")
-        )
-          .join("|");
+      case 'table':
+        return (rawExtractResult as string[][]).flatMap((
+          innerArray,
+        ) => innerArray.join('|'))
+          .join('|');
       default:
-        return "";
+        return '';
     }
   };
 }

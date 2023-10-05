@@ -1,106 +1,110 @@
-import axiod from "https://deno.land/x/axiod/mod.ts";
-import { Block } from "./blockInterfaces.ts";
-import { childrenListError } from "./errors/mod.ts";
-import { maybeClient } from "./helpers.ts";
-import Client from "https://deno.land/x/notion_sdk@v2.2.3/src/Client.ts";
+import axiod from 'https://deno.land/x/axiod/mod.ts';
+import { Block, NotionError } from './blockInterfaces.ts';
+
+import { Fetchify } from 'https://deno.land/x/fetchify@0.2.10/src/fetchify.ts';
+import { json } from 'https://deno.land/x/fetchify@0.2.10/mod.ts';
 
 export class Getter {
   key: string;
-  constructor(key: string) {
+  net: Fetchify;
+  baseURL: string;
+  constructor(key: string, net: Fetchify, baseURL: string) {
     this.key = key;
+    this.net = net;
+    this.baseURL = baseURL;
   }
-
-  // getBlocksByPage = async (
-  //   pageId: string,
-  //   size = 50,
-  //   client?: Client,
-  // ) => {
-  //   const cl = await maybeClient(client, this.key);
-  //   try {
-  //     const response = await cl.blocks.children.list({
-  //       block_id: pageId,
-  //       page_size: size,
-  //     });
-  //     return response.results as Block[];
-  //   } catch (e) {
-  //     throw new childrenListError();
-  //   }
-  // };
 
   getBlocksByPage = async (
     pageId: string,
     size = 50,
     cursor?: string | undefined,
-  ) => {
-    const res = await axiod.get(
-      `https://api.notion.com/v1/blocks/${pageId}/children${
-        cursor ? `?start_cursor=${cursor}` : ""
-      }`,
-      {
-        headers: {
-          "accept": "application/json",
-          "Notion-Version": "2022-06-28",
-          "content-type": "application/json",
-          "Authorization": `Bearer ${this.key}`,
-        },
-        params: {
-          page_size: size,
-        },
-      },
-    );
-    // console.log(res);
-    return {
-      blocks: res.data.results as Block[],
-      next_cursor: res.data.next_cursor as string | null,
-    };
+  ): Promise<
+    [
+      | { blocks: Block[]; next_cursor: string | null | undefined }
+      | null,
+      NotionError | null,
+    ]
+  > => {
+    try {
+      const url = new URL(
+        this.baseURL +
+          `/blocks/${pageId}/children${
+            cursor ? `?start_cursor=${cursor}` : ''
+          }`,
+      );
+      url.search = new URLSearchParams({
+        page_size: size.toString(),
+      }).toString();
+      const res = await json<any>(this.net.get(url));
+      if (res.response.status == 200) {
+        return [{
+          blocks: res.data.results as Block[],
+          next_cursor: res.data.next_cursor as string | null,
+        }, null];
+      }
+      throw res.data;
+    } catch (e) {
+      return [null, e as NotionError];
+    }
   };
 
   getBlockById = async (
     blockId: string,
-    client?: Client | undefined,
-  ): Promise<Block> => {
-    return await (await maybeClient(client, this.key)).blocks.retrieve({
-      block_id: blockId,
-    }) as unknown as Block;
+  ): Promise<[Block | null, NotionError | null]> => {
+    try {
+      const res = await json<any>(
+        this.net.get(`https://api.notion.com/v1/blocks/${blockId}`),
+      );
+      if (res.response.status == 200) {
+        return [res.data as Block, null];
+      }
+      throw res.data;
+    } catch (e) {
+      return [null, e as NotionError];
+    }
   };
 
   getNextBlock = async (
     blockId: string,
-  ) => {
-    const curBlock = await this.getBlockById(blockId);
-    return (await this.getBlocksByPage(
-      curBlock.parent.page_id!,
-      1,
-      curBlock.id,
-    )).next_cursor;
+  ): Promise<[string | null | undefined, NotionError | null]> => {
+    try {
+      const [curBlock, error] = await this.getBlockById(blockId);
+      if (error) throw error;
+      const [data, error2] = await this.getBlocksByPage(
+        curBlock!.parent.page_id!,
+        1,
+        curBlock!.id,
+      );
+      if (error2) throw error2;
+      return [(data!).next_cursor, null];
+    } catch (e) {
+      return [null, e as NotionError];
+    }
   };
 
-  transformID = async (blockId: string) => {
-    return (await this.getBlockById(blockId)).id;
+  transformID = async (
+    blockId: string,
+  ): Promise<[string | null, NotionError | null]> => {
+    try {
+      const [block, error] = await this.getBlockById(blockId);
+      if (error) throw error;
+      return [block!.id, null];
+    } catch (e) {
+      return [null, e as NotionError];
+    }
   };
-
-  // getFirstBlock = async (
-  //   pageId: string,
-  //   client?: Client,
-  // ): Promise<Block> => {
-  //   const blocks = await this.getBlocksByPage(pageId, 1);
-  //   return blocks[0];
-  // };
 
   getChildren = async (
     blockId: string,
-  ) => {
-    const res = await axiod.get(
-      `https://api.notion.com/v1/blocks/${blockId}/children`,
-      {
-        headers: {
-          "accept": "application/json",
-          "Notion-Version": "2022-06-28",
-          "content-type": "application/json",
-          "Authorization": `Bearer ${this.key}`,
-        },
-      },
-    );
-    return res.data.results as Block[];
+  ): Promise<[Block[] | null, NotionError | null]> => {
+    try {
+      const res = await json<any>(this.net.get(
+        `https://api.notion.com/v1/blocks/${blockId}/children`,
+      ));
+      if (res.response.status != 200) throw res.data;
+      return [res.data.results as Block[], null];
+    } catch (e) {
+      return [null, e as NotionError];
+    }
   };
 }

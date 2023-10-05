@@ -1,18 +1,25 @@
-import { Block } from "./blockInterfaces.ts";
-import { Extractor } from "./extractors.ts";
-import { Getter } from "./getters.ts";
-import { urlToId } from "./helpers.ts";
+import { Fetchify } from 'https://deno.land/x/fetchify@0.2.10/src/fetchify.ts';
+import { Block } from './blockInterfaces.ts';
+import { Extractor } from './extractors.ts';
+import { Getter } from './getters.ts';
+import { urlToId } from './helpers.ts';
 
 export class Behaviors {
+  net: Fetchify;
+  baseURL: string;
   key: string;
-  constructor(key: string) {
+  constructor(key: string, net: Fetchify, baseURL: string) {
     this.key = key;
+    this.net = net;
+    this.baseURL = baseURL;
   }
 
   searchBlockByCondition = async (
     pageId: string,
     conditionSuccess: (block: Block) => Promise<boolean> | boolean,
-    conditionStopSearch?: (block: Block) => Promise<boolean> | boolean,
+    conditionStopSearch?: (
+      block: Block,
+    ) => Promise<boolean> | boolean,
     start_at?: string | null,
     chunk_size: number = 50,
   ) => {
@@ -53,7 +60,8 @@ export class Behaviors {
     const ex = new Extractor(this.key);
     return await this.searchBlockByCondition(
       pageId,
-      async (block) => (await ex.extractTextFromBlock(block))?.includes(text),
+      async (block) =>
+        (await ex.extractTextFromBlock(block))?.includes(text),
       stopCondition,
       start_at,
     );

@@ -1,4 +1,4 @@
-import axiod from "https://deno.land/x/axiod/mod.ts";
+import axiod from 'https://deno.land/x/axiod/mod.ts';
 
 import {
   BLItemBlock,
@@ -9,12 +9,14 @@ import {
   H2Block,
   H3Block,
   NLIBlock,
+  Page,
   ParagraphBlock,
   QuoteBlock,
   ToDoBlock,
   ToggleTextBlock,
-} from "./blockInterfaces.ts";
-import { parseRichText } from "./helpers.ts";
+} from './blockInterfaces.ts';
+import { parseRichText } from './helpers.ts';
+import { Fetchify } from 'https://deno.land/x/fetchify@0.2.10/src/fetchify.ts';
 
 type TypedDataBlock =
   | Partial<ParagraphBlock>
@@ -31,8 +33,12 @@ type TypedDataBlock =
   | Partial<EquationBlock>;
 export class Appendor {
   key: string;
-  constructor(key: string) {
+  net: Fetchify;
+  baseURL: string;
+  constructor(key: string, net: Fetchify, baseURL: string) {
     this.key = key;
+    this.net = net;
+    this.baseURL = baseURL;
   }
 
   appendBlock = async (blockId: string, data: any) => {
@@ -41,22 +47,20 @@ export class Appendor {
       data,
       {
         headers: {
-          "accept": "application/json",
-          "Notion-Version": "2022-06-28",
-          "content-type": "application/json",
-          "Authorization": `Bearer ${this.key}`,
+          'accept': 'application/json',
+          'Notion-Version': '2022-06-28',
+          'content-type': 'application/json',
+          'Authorization': `Bearer ${this.key}`,
         },
       },
     );
-    // console.log(res);
     if (res.status === 200) return res.data.results;
-    // throw new Error(res.statusText);
   };
   makeParagraphBlock(text: string) {
     const maybeText = parseRichText(text);
     return {
-      "paragraph": {
-        "rich_text": maybeText,
+      'paragraph': {
+        'rich_text': maybeText,
       },
     } as Partial<ParagraphBlock>;
   }
@@ -70,15 +74,17 @@ export class Appendor {
       children: [this.makeParagraphBlock(text)],
       after,
     };
-    return (await this.appendBlock(blockId, data))[0] as ParagraphBlock;
+    return (await this.appendBlock(blockId, data))[
+      0
+    ] as ParagraphBlock;
   };
 
   makeToDoBlock(text: string, checked: boolean) {
     const maybeText = parseRichText(text);
     return {
-      "to_do": {
-        "rich_text": maybeText,
-        "checked": checked,
+      'to_do': {
+        'rich_text': maybeText,
+        'checked': checked,
       },
     } as Partial<ToDoBlock>;
   }
@@ -99,9 +105,9 @@ export class Appendor {
   makeCodeBlock(text: string, language: string) {
     const maybeText = parseRichText(text);
     return {
-      "code": {
-        "rich_text": maybeText,
-        "language": language,
+      'code': {
+        'rich_text': maybeText,
+        'language': language,
       },
     } as Partial<CodeBlock>;
   }
@@ -122,8 +128,8 @@ export class Appendor {
   makeQuoteBlock(text: string) {
     const maybeText = parseRichText(text);
     return {
-      "quote": {
-        "rich_text": maybeText,
+      'quote': {
+        'rich_text': maybeText,
       },
     } as Partial<QuoteBlock>;
   }
@@ -143,10 +149,10 @@ export class Appendor {
   makeCalloutBlock(text: string, icon: string) {
     const maybeText = parseRichText(text);
     return {
-      "callout": {
-        "rich_text": maybeText,
-        "icon": {
-          type: "emoji",
+      'callout': {
+        'rich_text': maybeText,
+        'icon': {
+          type: 'emoji',
           emoji: icon,
         },
       },
@@ -170,9 +176,9 @@ export class Appendor {
   makeH1Block(text: string) {
     const maybeText = parseRichText(text);
     return {
-      "heading_1": {
-        "rich_text": maybeText,
-        "is_toggleable": false,
+      'heading_1': {
+        'rich_text': maybeText,
+        'is_toggleable': false,
       },
     } as Partial<H1Block>;
   }
@@ -192,9 +198,9 @@ export class Appendor {
   makeH2Block(text: string) {
     const maybeText = parseRichText(text);
     return {
-      "heading_2": {
-        "rich_text": maybeText,
-        "is_toggleable": false,
+      'heading_2': {
+        'rich_text': maybeText,
+        'is_toggleable': false,
       },
     } as Partial<H2Block>;
   }
@@ -214,9 +220,9 @@ export class Appendor {
   makeH3Block(text: string) {
     const maybeText = parseRichText(text);
     return {
-      "heading_3": {
-        "rich_text": maybeText,
-        "is_toggleable": false,
+      'heading_3': {
+        'rich_text': maybeText,
+        'is_toggleable': false,
       },
     } as Partial<H3Block>;
   }
@@ -236,8 +242,8 @@ export class Appendor {
   makeBLItemBlock(text: string) {
     const maybeText = parseRichText(text);
     return {
-      "bulleted_list_item": {
-        "rich_text": maybeText,
+      'bulleted_list_item': {
+        'rich_text': maybeText,
       },
     } as Partial<BLItemBlock>;
   }
@@ -257,8 +263,8 @@ export class Appendor {
   makeNLItemBlock(text: string) {
     const maybeText = parseRichText(text);
     return {
-      "numbered_list_item": {
-        "rich_text": maybeText,
+      'numbered_list_item': {
+        'rich_text': maybeText,
       },
     } as Partial<NLIBlock>;
   }
@@ -278,8 +284,8 @@ export class Appendor {
   makeToggleTextBlock(text: string) {
     const maybeText = parseRichText(text);
     return {
-      "toggle": {
-        "rich_text": maybeText,
+      'toggle': {
+        'rich_text': maybeText,
       },
     } as Partial<ToggleTextBlock>;
   }
@@ -294,13 +300,15 @@ export class Appendor {
       after,
     };
 
-    return (await this.appendBlock(blockId, data))[0] as ToggleTextBlock;
+    return (await this.appendBlock(blockId, data))[
+      0
+    ] as ToggleTextBlock;
   };
 
   makeEquationBlock = (equation: string) => {
     return {
-      "equation": {
-        "expression": equation,
+      'equation': {
+        'expression': equation,
       },
     } as Partial<EquationBlock>;
   };
@@ -314,14 +322,18 @@ export class Appendor {
       children: [this.makeEquationBlock(equation)],
       after,
     };
-    return (await this.appendBlock(blockId, data))[0] as EquationBlock;
+    return (await this.appendBlock(blockId, data))[
+      0
+    ] as EquationBlock;
   };
 
   appendMultipleBlocks = async (
     blockId: string,
     blocksData: TypedDataBlock[],
   ) => {
-    return (await this.appendBlock(blockId, { children: blocksData }));
+    return (await this.appendBlock(blockId, {
+      children: blocksData,
+    }));
   };
 
   appendColumn = async (
@@ -332,18 +344,55 @@ export class Appendor {
     const columns = [];
     for (const block of blocksData) {
       columns.push({
-        "column": { children: [block] },
+        'column': { children: [block] },
       });
     }
     const data = {
-      children: [{ "column_list": { children: columns } }],
+      children: [{ 'column_list': { children: columns } }],
       after,
     };
 
     return (await this.appendBlock(blockId, data))[0];
   };
 
+  appendPage = async (parentId: string, title: string) => {
+    const data = {
+      parent: {
+        'page_id': parentId,
+      },
+      properties: {
+        'title': [{
+          'type': 'text',
+          'text': {
+            'content': title,
+          },
+        }],
+      },
+    };
+    const res = await axiod.post(
+      `https://api.notion.com/v1/pages`,
+      data,
+      {
+        headers: {
+          'accept': 'application/json',
+          'Notion-Version': '2022-06-28',
+          'content-type': 'application/json',
+          'Authorization': `Bearer ${this.key}`,
+        },
+      },
+    );
+    if (res.status === 429) {
+      console.log(res.headers.get('Retry-After'));
+    }
+    if (res.status === 200) {
+      console.log(`Отправил: ${title}`);
+      return res.data as Page;
+    }
+    return null;
+  };
+
   append = {
+    page: this.appendPage,
     paragraph: this.appendParagraph,
     toDo: this.appendToDo,
     code: this.appendCode,

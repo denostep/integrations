@@ -2,6 +2,7 @@ import axiod from 'https://deno.land/x/axiod/mod.ts';
 
 import {
   BLItemBlock,
+  Block,
   CalloutBlock,
   CodeBlock,
   EquationBlock,
@@ -9,6 +10,7 @@ import {
   H2Block,
   H3Block,
   NLIBlock,
+  NotionError,
   Page,
   ParagraphBlock,
   QuoteBlock,
@@ -17,6 +19,7 @@ import {
 } from './blockInterfaces.ts';
 import { parseRichText } from './helpers.ts';
 import { Fetchify } from 'https://deno.land/x/fetchify@0.2.10/src/fetchify.ts';
+import { json } from 'https://deno.land/x/fetchify@0.2.10/mod.ts';
 
 type TypedDataBlock =
   | Partial<ParagraphBlock>
@@ -41,20 +44,22 @@ export class Appendor {
     this.baseURL = baseURL;
   }
 
-  appendBlock = async (blockId: string, data: any) => {
-    const res = await axiod.patch(
-      `https://api.notion.com/v1/blocks/${blockId}/children`,
-      data,
-      {
-        headers: {
-          'accept': 'application/json',
-          'Notion-Version': '2022-06-28',
-          'content-type': 'application/json',
-          'Authorization': `Bearer ${this.key}`,
-        },
-      },
-    );
-    if (res.status === 200) return res.data.results;
+  appendBlock = async (
+    blockId: string,
+    data: any,
+  ): Promise<[Block[] | null, NotionError | null]> => {
+    try {
+      const res = await json<any>(this.net.patch(
+        `https://api.notion.com/v1/blocks/${blockId}/children`,
+        data,
+      ));
+      if (res.response.status === 200) {
+        return [res.data.results as Block[], null];
+      }
+      throw res.data;
+    } catch (e) {
+      return [null, e as NotionError];
+    }
   };
   makeParagraphBlock(text: string) {
     const maybeText = parseRichText(text);
@@ -69,14 +74,18 @@ export class Appendor {
     blockId: string,
     text: string,
     after?: string,
-  ) => {
-    const data = {
-      children: [this.makeParagraphBlock(text)],
-      after,
-    };
-    return (await this.appendBlock(blockId, data))[
-      0
-    ] as ParagraphBlock;
+  ): Promise<[ParagraphBlock | null, NotionError | null]> => {
+    try {
+      const data = {
+        children: [this.makeParagraphBlock(text)],
+        after,
+      };
+      const [block, error] = await this.appendBlock(blockId, data);
+      if (error) throw error;
+      return [block![0] as ParagraphBlock, null];
+    } catch (e) {
+      return [null, e as NotionError];
+    }
   };
 
   makeToDoBlock(text: string, checked: boolean) {
@@ -94,12 +103,18 @@ export class Appendor {
     text: string,
     checked: boolean,
     after?: string,
-  ) => {
-    const data = {
-      children: [this.makeToDoBlock(text, checked)],
-      after,
-    };
-    return (await this.appendBlock(blockId, data))[0] as ToDoBlock;
+  ): Promise<[ToDoBlock | null, NotionError | null]> => {
+    try {
+      const data = {
+        children: [this.makeToDoBlock(text, checked)],
+        after,
+      };
+      const [block, error] = await this.appendBlock(blockId, data);
+      if (error) throw error;
+      return [block![0] as ToDoBlock, null];
+    } catch (e) {
+      return [null, e as NotionError];
+    }
   };
 
   makeCodeBlock(text: string, language: string) {
@@ -117,12 +132,18 @@ export class Appendor {
     text: string,
     language: string,
     after?: string,
-  ) => {
-    const data = {
-      children: [this.makeCodeBlock(text, language)],
-      after,
-    };
-    return (await this.appendBlock(blockId, data))[0] as CodeBlock;
+  ): Promise<[CodeBlock | null, NotionError | null]> => {
+    try {
+      const data = {
+        children: [this.makeCodeBlock(text, language)],
+        after,
+      };
+      const [block, error] = await this.appendBlock(blockId, data);
+      if (error) throw error;
+      return [block![0] as CodeBlock, null];
+    } catch (e) {
+      return [null, e as NotionError];
+    }
   };
 
   makeQuoteBlock(text: string) {
@@ -138,12 +159,18 @@ export class Appendor {
     blockId: string,
     text: string,
     after?: string,
-  ) => {
-    const data = {
-      children: [this.makeQuoteBlock(text)],
-      after,
-    };
-    return (await this.appendBlock(blockId, data))[0] as QuoteBlock;
+  ): Promise<[QuoteBlock | null, NotionError | null]> => {
+    try {
+      const data = {
+        children: [this.makeQuoteBlock(text)],
+        after,
+      };
+      const [block, error] = await this.appendBlock(blockId, data);
+      if (error) throw error;
+      return [block![0] as QuoteBlock, null];
+    } catch (e) {
+      return [null, e as NotionError];
+    }
   };
 
   makeCalloutBlock(text: string, icon: string) {
@@ -164,13 +191,18 @@ export class Appendor {
     text: string,
     icon: string,
     after?: string,
-  ) => {
-    const data = {
-      children: [this.makeCalloutBlock(text, icon)],
-      after,
-    };
-
-    return (await this.appendBlock(blockId, data))[0] as CalloutBlock;
+  ): Promise<[CalloutBlock | null, NotionError | null]> => {
+    try {
+      const data = {
+        children: [this.makeCalloutBlock(text, icon)],
+        after,
+      };
+      const [block, error] = await this.appendBlock(blockId, data);
+      if (error) throw error;
+      return [block![0] as CalloutBlock, null];
+    } catch (e) {
+      return [null, e as NotionError];
+    }
   };
 
   makeH1Block(text: string) {
@@ -187,12 +219,18 @@ export class Appendor {
     blockId: string,
     text: string,
     after?: string,
-  ) => {
-    const data = {
-      children: [this.makeH1Block(text)],
-      after,
-    };
-    return (await this.appendBlock(blockId, data))[0] as H1Block;
+  ): Promise<[H1Block | null, NotionError | null]> => {
+    try {
+      const data = {
+        children: [this.makeH1Block(text)],
+        after,
+      };
+      const [block, error] = await this.appendBlock(blockId, data);
+      if (error) throw error;
+      return [block![0] as H1Block, null];
+    } catch (e) {
+      return [null, e as NotionError];
+    }
   };
 
   makeH2Block(text: string) {
@@ -209,12 +247,18 @@ export class Appendor {
     blockId: string,
     text: string,
     after?: string,
-  ) => {
-    const data = {
-      children: [this.makeH2Block(text)],
-      after,
-    };
-    return (await this.appendBlock(blockId, data))[0] as H2Block;
+  ): Promise<[H2Block | null, NotionError | null]> => {
+    try {
+      const data = {
+        children: [this.makeH2Block(text)],
+        after,
+      };
+      const [block, error] = await this.appendBlock(blockId, data);
+      if (error) throw error;
+      return [block![0] as H2Block, null];
+    } catch (e) {
+      return [null, e as NotionError];
+    }
   };
 
   makeH3Block(text: string) {
@@ -231,12 +275,18 @@ export class Appendor {
     blockId: string,
     text: string,
     after?: string,
-  ) => {
-    const data = {
-      children: [this.makeH3Block(text)],
-      after,
-    };
-    return (await this.appendBlock(blockId, data))[0] as H3Block;
+  ): Promise<[H3Block | null, NotionError | null]> => {
+    try {
+      const data = {
+        children: [this.makeH3Block(text)],
+        after,
+      };
+      const [block, error] = await this.appendBlock(blockId, data);
+      if (error) throw error;
+      return [block![0] as H3Block, null];
+    } catch (e) {
+      return [null, e as NotionError];
+    }
   };
 
   makeBLItemBlock(text: string) {
@@ -252,12 +302,18 @@ export class Appendor {
     blockId: string,
     text: string,
     after?: string,
-  ) => {
-    const data = {
-      children: [this.makeBLItemBlock(text)],
-      after,
-    };
-    return (await this.appendBlock(blockId, data))[0] as BLItemBlock;
+  ): Promise<[BLItemBlock | null, NotionError | null]> => {
+    try {
+      const data = {
+        children: [this.makeBLItemBlock(text)],
+        after,
+      };
+      const [block, error] = await this.appendBlock(blockId, data);
+      if (error) throw error;
+      return [block![0] as BLItemBlock, null];
+    } catch (e) {
+      return [null, e as NotionError];
+    }
   };
 
   makeNLItemBlock(text: string) {
@@ -272,13 +328,18 @@ export class Appendor {
     blockId: string,
     text: string,
     after?: string,
-  ) => {
-    const data = {
-      children: [this.makeNLItemBlock(text)],
-      after,
-    };
-
-    return (await this.appendBlock(blockId, data))[0] as NLIBlock;
+  ): Promise<[NLIBlock | null, NotionError | null]> => {
+    try {
+      const data = {
+        children: [this.makeNLItemBlock(text)],
+        after,
+      };
+      const [block, error] = await this.appendBlock(blockId, data);
+      if (error) throw error;
+      return [block![0] as NLIBlock, null];
+    } catch (e) {
+      return [null, e as NotionError];
+    }
   };
 
   makeToggleTextBlock(text: string) {
@@ -294,15 +355,18 @@ export class Appendor {
     blockId: string,
     text: string,
     after?: string,
-  ) => {
-    const data = {
-      children: [this.makeToggleTextBlock(text)],
-      after,
-    };
-
-    return (await this.appendBlock(blockId, data))[
-      0
-    ] as ToggleTextBlock;
+  ): Promise<[ToggleTextBlock | null, NotionError | null]> => {
+    try {
+      const data = {
+        children: [this.makeToggleTextBlock(text)],
+        after,
+      };
+      const [block, error] = await this.appendBlock(blockId, data);
+      if (error) throw error;
+      return [block![0] as ToggleTextBlock, null];
+    } catch (e) {
+      return [null, e as NotionError];
+    }
   };
 
   makeEquationBlock = (equation: string) => {
@@ -317,23 +381,33 @@ export class Appendor {
     blockId: string,
     equation: string,
     after?: string,
-  ) => {
-    const data = {
-      children: [this.makeEquationBlock(equation)],
-      after,
-    };
-    return (await this.appendBlock(blockId, data))[
-      0
-    ] as EquationBlock;
+  ): Promise<[EquationBlock | null, NotionError | null]> => {
+    try {
+      const data = {
+        children: [this.makeEquationBlock(equation)],
+        after,
+      };
+      const [block, error] = await this.appendBlock(blockId, data);
+      if (error) throw error;
+      return [block![0] as EquationBlock, null];
+    } catch (e) {
+      return [null, e as NotionError];
+    }
   };
 
   appendMultipleBlocks = async (
     blockId: string,
     blocksData: TypedDataBlock[],
-  ) => {
-    return (await this.appendBlock(blockId, {
-      children: blocksData,
-    }));
+  ): Promise<[Block[] | null, NotionError | null]> => {
+    try {
+      const [data, error] = await this.appendBlock(blockId, {
+        children: blocksData,
+      });
+      if (error) throw error;
+      return [data, null];
+    } catch (e) {
+      return [null, e as NotionError];
+    }
   };
 
   appendColumn = async (
@@ -341,54 +415,51 @@ export class Appendor {
     blocksData: TypedDataBlock[],
     after?: string,
   ) => {
-    const columns = [];
-    for (const block of blocksData) {
-      columns.push({
-        'column': { children: [block] },
-      });
+    try {
+      const columns = [];
+      for (const block of blocksData) {
+        columns.push({
+          'column': { children: [block] },
+        });
+      }
+      const data = {
+        children: [{ 'column_list': { children: columns } }],
+        after,
+      };
+      const [result, error] = await this.appendBlock(blockId, data);
+      if (error) throw error;
+      return [result, null];
+    } catch (e) {
+      return [null, e as NotionError];
     }
-    const data = {
-      children: [{ 'column_list': { children: columns } }],
-      after,
-    };
-
-    return (await this.appendBlock(blockId, data))[0];
   };
 
   appendPage = async (parentId: string, title: string) => {
-    const data = {
-      parent: {
-        'page_id': parentId,
-      },
-      properties: {
-        'title': [{
-          'type': 'text',
-          'text': {
-            'content': title,
-          },
-        }],
-      },
-    };
-    const res = await axiod.post(
-      `https://api.notion.com/v1/pages`,
-      data,
-      {
-        headers: {
-          'accept': 'application/json',
-          'Notion-Version': '2022-06-28',
-          'content-type': 'application/json',
-          'Authorization': `Bearer ${this.key}`,
+    try {
+      const data = {
+        parent: {
+          'page_id': parentId,
         },
-      },
-    );
-    if (res.status === 429) {
-      console.log(res.headers.get('Retry-After'));
+        properties: {
+          'title': [{
+            'type': 'text',
+            'text': {
+              'content': title,
+            },
+          }],
+        },
+      };
+      const res = await json<any>(this.net.post(
+        `https://api.notion.com/v1/pages`,
+        {
+          body: JSON.stringify(data),
+        },
+      ));
+      if (res.response.status !== 200) throw res.data;
+      return [res.data.results, null];
+    } catch (e) {
+      return [null, e as NotionError];
     }
-    if (res.status === 200) {
-      console.log(`Отправил: ${title}`);
-      return res.data as Page;
-    }
-    return null;
   };
 
   append = {

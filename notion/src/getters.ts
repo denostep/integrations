@@ -1,4 +1,3 @@
-import axiod from 'https://deno.land/x/axiod/mod.ts';
 import { Block, NotionError } from './blockInterfaces.ts';
 
 import { Fetchify } from 'https://deno.land/x/fetchify@0.2.10/src/fetchify.ts';

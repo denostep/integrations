@@ -1,14 +1,10 @@
 import { Extractor } from './extractors.ts';
 import { Getter } from './getters.ts';
 import { Appendor } from './appendors.ts';
-import Tuner from 'https://deno.land/x/tuner@v0.1.4/mod.ts';
-import { urlToId } from './helpers.ts';
 import { Behaviors } from './behaviors.ts';
-import {
-  Fetchify,
-  fetchify,
-} from 'https://deno.land/x/fetchify@0.2.10/src/fetchify.ts';
-
+import { Fetchify } from '$global';
+import { fetchify } from '$global';
+import { ILimiterOptions } from 'https://deno.land/x/fetchify@0.3.12/src/types.ts';
 export class Notion {
   public key: string;
   appendor: Appendor;
@@ -18,13 +14,10 @@ export class Notion {
 
   net: Fetchify;
   baseURL = 'https://api.notion.com/v1';
-  constructor(options: { key: string }) {
+  constructor(options: { key: string; limitOpts?: ILimiterOptions }) {
     this.key = options.key;
     this.net = fetchify.create({
-      limiter: {
-        rps: 3,
-        '429': () => 1000,
-      },
+      limiter: options.limitOpts ?? { rps: 3, rt: () => 1000 },
       headers: {
         'accept': 'application/json',
         'Notion-Version': '2022-06-28',

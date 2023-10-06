@@ -1,5 +1,3 @@
-import axiod from 'https://deno.land/x/axiod/mod.ts';
-
 import {
   BLItemBlock,
   Block,
@@ -18,8 +16,7 @@ import {
   ToggleTextBlock,
 } from './blockInterfaces.ts';
 import { parseRichText } from './helpers.ts';
-import { Fetchify } from 'https://deno.land/x/fetchify@0.2.10/src/fetchify.ts';
-import { json } from 'https://deno.land/x/fetchify@0.2.10/mod.ts';
+import { Fetchify, json } from '$global';
 
 type TypedDataBlock =
   | Partial<ParagraphBlock>
@@ -43,7 +40,6 @@ export class Appendor {
     this.net = net;
     this.baseURL = baseURL;
   }
-
   appendBlock = async (
     blockId: string,
     data: any,
@@ -51,13 +47,14 @@ export class Appendor {
     try {
       const res = await json<any>(this.net.patch(
         `https://api.notion.com/v1/blocks/${blockId}/children`,
-        data,
+        { body: JSON.stringify(data) },
       ));
       if (res.response.status === 200) {
         return [res.data.results as Block[], null];
       }
       throw res.data;
     } catch (e) {
+      console.log(e);
       return [null, e as NotionError];
     }
   };

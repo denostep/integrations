@@ -22,7 +22,7 @@ import {
 import { urlToId } from './helpers.ts';
 import { Getter } from './getters.ts';
 import { missingURLorIDorBlock } from './errors/commonErrors.ts';
-import { Fetchify } from 'https://deno.land/x/fetchify@0.2.10/src/fetchify.ts';
+import { Fetchify } from '$global';
 
 function complieRichText(rc: RichText[]) {
   return rc.map((item) => item.text.content).join(' ');

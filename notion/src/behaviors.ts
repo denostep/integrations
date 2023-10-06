@@ -1,8 +1,8 @@
-import { Fetchify } from 'https://deno.land/x/fetchify@0.2.10/src/fetchify.ts';
 import { Block, NotionError } from './blockInterfaces.ts';
 import { Extractor } from './extractors.ts';
 import { Getter } from './getters.ts';
 import { urlToId } from './helpers.ts';
+import { Fetchify } from '$global';
 
 export class Behaviors {
   net: Fetchify;

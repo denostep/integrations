@@ -1,12 +1,11 @@
-import Client from "https://deno.land/x/notion_sdk@v2.2.3/src/Client.ts";
-import { urlToIdError } from "./errors/formatErrors.ts";
-import { RichText } from "./blockInterfaces.ts";
+import { urlToIdError } from './errors/formatErrors.ts';
+import { RichText } from './blockInterfaces.ts';
 
 export const urlToId = {
   page: (url: string): string => {
     const match = url.match(/\/([\w-]+)\?/);
     if (match && match[1]) {
-      const parts = match[1].split("-");
+      const parts = match[1].split('-');
       if (parts.length > 1) {
         return parts[parts.length - 1];
       } else {
@@ -28,7 +27,7 @@ export const urlToId = {
 
 function wrapLinksInBlocks(text: string) {
   const regex = /(https?:\/\/[^\s]+)/g;
-  return text.replace(regex, "_{{LINK=$1:: $1}}_");
+  return text.replace(regex, '_{{LINK=$1:: $1}}_');
 }
 
 export function parseRichText(str: string): RichText[] {
@@ -43,7 +42,7 @@ export function parseRichText(str: string): RichText[] {
     const plainText = str.slice(lastIndex, match.index);
     if (plainText) {
       result.push({
-        type: "text",
+        type: 'text',
         text: { content: plainText, link: null },
         annotations: {
           bold: false,
@@ -51,7 +50,7 @@ export function parseRichText(str: string): RichText[] {
           strikethrough: false,
           underline: false,
           code: false,
-          color: "default",
+          color: 'default',
         },
         plain_text: plainText,
         href: null,
@@ -59,26 +58,33 @@ export function parseRichText(str: string): RichText[] {
     }
 
     const [, format] = match;
-    const splitted = format.split("::");
-    const [flagsPart, textPart] = [splitted[0], splitted.slice(1).join("::")];
-    const flags = flagsPart.split(" ").map((flag) => flag.trim().toUpperCase());
+    const splitted = format.split('::');
+    const [flagsPart, textPart] = [
+      splitted[0],
+      splitted.slice(1).join('::'),
+    ];
+    const flags = flagsPart.split(' ').map((flag) =>
+      flag.trim().toUpperCase()
+    );
     const text = textPart.trim();
 
     const annotations = {
-      bold: flags.includes("BOLD"),
-      italic: flags.includes("ITALIC"),
-      strikethrough: flags.includes("STRIKETHROUGH"),
-      underline: flags.includes("UNDERLINE"),
-      code: flags.includes("CODE"),
+      bold: flags.includes('BOLD'),
+      italic: flags.includes('ITALIC'),
+      strikethrough: flags.includes('STRIKETHROUGH'),
+      underline: flags.includes('UNDERLINE'),
+      code: flags.includes('CODE'),
       color: flags.find((flag) =>
-        flag.startsWith("COLOR=")
-      )?.split("=")[1].toLowerCase() ||
-        "default",
+        flag.startsWith('COLOR=')
+      )?.split('=')[1].toLowerCase() ||
+        'default',
     };
-    const url = flags.find((flag) => flag.startsWith("LINK="))?.split("=")[1]
+    const url = flags.find((flag) => flag.startsWith('LINK='))?.split(
+      '=',
+    )[1]
       .toLowerCase();
     result.push({
-      type: "text",
+      type: 'text',
       text: {
         content: text,
         link: url ? { url } : null,
@@ -94,7 +100,7 @@ export function parseRichText(str: string): RichText[] {
   const remainingText = str.slice(lastIndex);
   if (remainingText) {
     result.push({
-      type: "text",
+      type: 'text',
       text: { content: remainingText, link: null },
       annotations: {
         bold: false,
@@ -102,7 +108,7 @@ export function parseRichText(str: string): RichText[] {
         strikethrough: false,
         underline: false,
         code: false,
-        color: "default",
+        color: 'default',
       },
       plain_text: remainingText,
       href: null,
@@ -112,7 +118,7 @@ export function parseRichText(str: string): RichText[] {
   return result;
 }
 
-export async function maybeClient(client: Client | undefined, key: string) {
-  return client ||
-    new Client({ auth: key });
-}
+// export async function maybeClient(client: Client | undefined, key: string) {
+//   return client ||
+//     new Client({ auth: key });
+// }

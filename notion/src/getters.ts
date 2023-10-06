@@ -1,8 +1,6 @@
 import { Block, NotionError } from './blockInterfaces.ts';
-
-import { Fetchify } from 'https://deno.land/x/fetchify@0.2.10/src/fetchify.ts';
-import { json } from 'https://deno.land/x/fetchify@0.2.10/mod.ts';
-
+import { Fetchify, json } from '$global';
+import { fetchify } from '$global';
 export class Getter {
   key: string;
   net: Fetchify;
@@ -51,9 +49,9 @@ export class Getter {
     blockId: string,
   ): Promise<[Block | null, NotionError | null]> => {
     try {
-      const res = await json<any>(
-        this.net.get(`https://api.notion.com/v1/blocks/${blockId}`),
-      );
+      const res = await json<any>(this.net.get(
+        `https://api.notion.com/v1/blocks/${blockId}`,
+      ));
       if (res.response.status == 200) {
         return [res.data as Block, null];
       }

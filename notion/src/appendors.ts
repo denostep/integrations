@@ -3,6 +3,7 @@ import {
   Block,
   CalloutBlock,
   CodeBlock,
+  DividerBlock,
   EquationBlock,
   H1Block,
   H2Block,
@@ -392,6 +393,26 @@ export class Appendor {
     }
   };
 
+  makeDividerBlock = () => {
+    return {
+      'divider': {},
+    } as Partial<DividerBlock>;
+  };
+
+  appendDividerBlock = async (blockId: string, after?: string) => {
+    try {
+      const data = {
+        children: [this.makeDividerBlock()],
+        after,
+      };
+      const [block, error] = await this.appendBlock(blockId, data);
+      if (error) throw error;
+      return [block![0] as DividerBlock, null];
+    } catch (e) {
+      return [null, e as NotionError];
+    }
+  };
+
   appendMultipleBlocks = async (
     blockId: string,
     blocksData: TypedDataBlock[],
@@ -484,6 +505,7 @@ export class Appendor {
     toggleText: this.appendToggleText,
 
     equation: this.appendEquationBlock,
+    divider: this.appendDividerBlock,
   };
 }
 

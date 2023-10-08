@@ -7,16 +7,14 @@ import { parseRichText, urlToId } from '../src/helpers.ts';
 const config = await Tuner.use.loadConfig() as Config;
 const notion = new Notion({ key: Tuner.getEnv('NOTION_KEY') });
 try {
-  const pageId = urlToId.page(
-    'https://artpani.notion.site/d1ecc246b8304e08a780b9a312548064?pvs=4',
-  );
-  const [result, error] = await notion.appendor.appendCode(
-    pageId,
-    'ololo222455445',
-    'typescript',
-    urlToId.block(
-      'https://www.notion.so/artpani/d1ecc246b8304e08a780b9a312548064?pvs=4#ce7574073eef42bda67fb031eecc4dd',
+  // const pageId = urlToId.page(
+  //   'https://artpani.notion.site/d1ecc246b8304e08a780b9a312548064?pvs=4',
+  // );
+  const [result, error] = await notion.appendor.appendPage(
+    urlToId.page(
+      'https://artpani.notion.site/d1ecc246b8304e08a780b9a312548064?pvs=4',
     ),
+    'ВОТ ТЕСТ СТРАНИЦА',
   );
   if (error) throw error;
   console.log(result!);

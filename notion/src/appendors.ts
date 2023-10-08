@@ -431,7 +431,10 @@ export class Appendor {
     }
   };
 
-  appendPage = async (parentId: string, title: string) => {
+  appendPage = async (
+    parentId: string,
+    title: string,
+  ): Promise<[Page | null, NotionError | null]> => {
     try {
       const data = {
         parent: {
@@ -453,7 +456,7 @@ export class Appendor {
         },
       ));
       if (res.response.status !== 200) throw res.data;
-      return [res.data.results, null];
+      return [res.data as Page, null];
     } catch (e) {
       return [null, e as NotionError];
     }

@@ -5,7 +5,7 @@
     }
   },
   "tasks": {
-    "dev": "config=myConfig deno run --allow-all notion/sandbox/ex1.ts",
+    "start": "config=myConfig deno run --allow-all notion/sandbox/ex1.ts",
     "fs": "deno run --allow-all notion/src/testServer/index.ts"
   },
   "lint": {

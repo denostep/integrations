@@ -31,7 +31,8 @@ type TypedDataBlock =
   | Partial<CalloutBlock>
   | Partial<QuoteBlock>
   | Partial<ToggleTextBlock>
-  | Partial<EquationBlock>;
+  | Partial<EquationBlock>
+  | Partial<DividerBlock>;
 export class Appendor {
   key: string;
   net: Fetchify;
@@ -399,7 +400,10 @@ export class Appendor {
     } as Partial<DividerBlock>;
   };
 
-  appendDividerBlock = async (blockId: string, after?: string) => {
+  appendDividerBlock = async (
+    blockId: string,
+    after?: string,
+  ): Promise<[DividerBlock | null, NotionError | null]> => {
     try {
       const data = {
         children: [this.makeDividerBlock()],
@@ -416,10 +420,12 @@ export class Appendor {
   appendMultipleBlocks = async (
     blockId: string,
     blocksData: TypedDataBlock[],
+    after?: string,
   ): Promise<[Block[] | null, NotionError | null]> => {
     try {
       const [data, error] = await this.appendBlock(blockId, {
         children: blocksData,
+        after,
       });
       if (error) throw error;
       return [data, null];

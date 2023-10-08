@@ -17,9 +17,16 @@ try {
   // const pageId = urlToId.page(
   //   'https://artpani.notion.site/d1ecc246b8304e08a780b9a312548064?pvs=4',
   // );
-  const [result, error] = await notion.appendor.appendDividerBlock(
+  const [result, error] = await notion.appendor.appendMultipleBlocks(
     urlToId.page(
       'https://artpani.notion.site/d1ecc246b8304e08a780b9a312548064?pvs=4',
+    ),
+    [
+      notion.appendor.makeH1Block('АХХАХАХАХА'),
+      notion.appendor.makeDividerBlock(),
+    ],
+    urlToId.block(
+      'https://www.notion.so/artpani/d1ecc246b8304e08a780b9a312548064?pvs=4#ef81f9e0a6b9482db00b2045bc1a76c4',
     ),
   );
   if (error) throw error;

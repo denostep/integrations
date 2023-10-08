@@ -1,7 +1,4 @@
 {
-  "imports": {
-    "$global": "./global.ts"
-  },
   "test": {
     "files": {
       "include": ["tests/"]

@@ -22,7 +22,7 @@ import {
 import { urlToId } from './helpers.ts';
 import { Getter } from './getters.ts';
 import { missingURLorIDorBlock } from './errors/commonErrors.ts';
-import { Fetchify } from '$global';
+import { Fetchify } from '../../global.ts';
 
 function complieRichText(rc: RichText[]) {
   return rc.map((item) => item.text.content).join(' ');

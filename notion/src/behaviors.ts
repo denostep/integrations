@@ -2,7 +2,7 @@ import { Block, NotionError } from './blockInterfaces.ts';
 import { Extractor } from './extractors.ts';
 import { Getter } from './getters.ts';
 import { urlToId } from './helpers.ts';
-import { Fetchify } from '$global';
+import { Fetchify } from '../../global.ts';
 
 export class Behaviors {
   net: Fetchify;

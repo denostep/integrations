@@ -1,6 +1,6 @@
+import { Fetchify, json } from '../../global.ts';
 import { Block, NotionError } from './blockInterfaces.ts';
-import { Fetchify, json } from '$global';
-import { fetchify } from '$global';
+
 export class Getter {
   key: string;
   net: Fetchify;

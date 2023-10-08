@@ -2,9 +2,9 @@ import { Extractor } from './extractors.ts';
 import { Getter } from './getters.ts';
 import { Appendor } from './appendors.ts';
 import { Behaviors } from './behaviors.ts';
-import { Fetchify } from '$global';
-import { fetchify } from '$global';
+
 import { ILimiterOptions } from 'https://deno.land/x/fetchify@0.3.12/src/types.ts';
+import { Fetchify, fetchify } from '../../global.ts';
 export class Notion {
   public key: string;
   appendor: Appendor;

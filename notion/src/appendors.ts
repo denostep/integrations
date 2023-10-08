@@ -16,7 +16,7 @@ import {
   ToggleTextBlock,
 } from './blockInterfaces.ts';
 import { parseRichText } from './helpers.ts';
-import { Fetchify, json } from '$global';
+import { Fetchify, json } from '../../global.ts';
 
 type TypedDataBlock =
   | Partial<ParagraphBlock>

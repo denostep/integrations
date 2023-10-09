@@ -69,7 +69,7 @@ export class Behaviors {
     return await this.searchBlockByCondition(
       pageId,
       async (block) =>
-        (await ex.extractTextFromBlock(block))?.includes(text),
+        (await ex.extractTextFromBlock(block))[0]!.includes(text),
       stopCondition,
       start_at,
     );

@@ -17,19 +17,16 @@ try {
   // const pageId = urlToId.page(
   //   'https://artpani.notion.site/d1ecc246b8304e08a780b9a312548064?pvs=4',
   // );
-  const [result, error] = await notion.behavior
+  const t = await notion.behavior
     .searchBlockByTextIncluded(
-      urlToId.page(
-        'https://artpani.notion.site/DailyLog-Artem-dailyLog-d9d9e351544a4894b6546c3cea001858?pvs=4',
-      ),
-      'Sol Gryn',
+      'd9d9e351544a4894b6546c3cea001858',
+      'Artem  (artpani)',
       (block) => block.type === 'equation',
-      urlToId.block(
-        'https://www.notion.so/artpani/DailyLog-Artem-dailyLog-d9d9e351544a4894b6546c3cea001858?pvs=4#fe7cd83446084517a8d532c92587c666',
-      ),
+      'eea9569d-2061-491b-a6a7-52e9eb5368de',
     );
-  if (error) throw error;
-  console.log(result!);
+  console.log(t);
+  // if (error) throw error;
+  // console.log(result!);
 } catch (e) {
   console.log(e);
 }

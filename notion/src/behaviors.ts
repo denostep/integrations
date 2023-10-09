@@ -28,7 +28,8 @@ export class Behaviors {
       let next_cursor: string | null | undefined = start_at
         ? start_at
         : undefined;
-
+      // console.log(next_cursor);
+      const ex = new Extractor(this.key, this.net, this.baseURL);
       do {
         const [info, error] = await get
           .getBlocksByPage(
@@ -40,6 +41,7 @@ export class Behaviors {
         const { next_cursor: nextCursor, blocks } = info!;
 
         for (const block of blocks) {
+          // console.log(await ex.extractTextFromBlock(block));
           if (
             conditionStopSearch && await conditionStopSearch(block)
           ) {
@@ -68,8 +70,12 @@ export class Behaviors {
     const ex = new Extractor(this.key, this.net, this.baseURL);
     return await this.searchBlockByCondition(
       pageId,
-      async (block) =>
-        (await ex.extractTextFromBlock(block))[0]!.includes(text),
+      async (block) => {
+        // console.log(await ex.extractTextFromBlock(block));
+        return (await ex.extractTextFromBlock(block))[0]!.includes(
+          text,
+        );
+      },
       stopCondition,
       start_at,
     );

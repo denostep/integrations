@@ -25,12 +25,14 @@ export class Getter {
     try {
       const url = new URL(
         this.baseURL +
-          `/blocks/${pageId}/children${
-            cursor ? `?start_cursor=${cursor}` : ''
-          }`,
+          `/blocks/${pageId}/children`,
       );
       url.search = new URLSearchParams({
         page_size: size.toString(),
+        //@ts-ignore
+        start_cursor: cursor
+          ? (await this.transformID(cursor))[0]
+          : undefined,
       }).toString();
       const res = await json<any>(this.net.get(url));
       if (res.response.status == 200) {

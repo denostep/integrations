@@ -461,12 +461,16 @@ export class Appendor {
   appendPage = async (
     parentId: string,
     title: string,
+    icon?: string,
+    cover?: string,
   ): Promise<[Page | null, NotionError | null]> => {
     try {
       const data = {
         parent: {
           'page_id': parentId,
         },
+        icon: icon ? { emoji: icon } : undefined,
+        cover: cover ? { external: { url: cover } } : undefined,
         properties: {
           'title': [{
             'type': 'text',

@@ -17,13 +17,12 @@ try {
   // const pageId = urlToId.page(
   //   'https://artpani.notion.site/d1ecc246b8304e08a780b9a312548064?pvs=4',
   // );
-  const t = await notion.behavior
-    .searchBlockByTextIncluded(
-      'd9d9e351544a4894b6546c3cea001858',
-      'Artem  (artpani)',
-      (block) => block.type === 'equation',
-      'eea9569d-2061-491b-a6a7-52e9eb5368de',
-    );
+  const t = await notion.appendor.appendPage(
+    urlToId.page(
+      'https://artpani.notion.site/d1ecc246b8304e08a780b9a312548064?pvs=4',
+    ),
+    'СУПЕР ТЕСТ СТРАНИЦА',
+  );
   console.log(t);
   // if (error) throw error;
   // console.log(result!);

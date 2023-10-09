@@ -30,9 +30,15 @@ export class Getter {
       url.search = new URLSearchParams({
         page_size: size.toString(),
         //@ts-ignore
-        start_cursor: (await this.transformID(cursor))[0] ??
-          undefined,
+        start_cursor: cursor
+          ? (await this.transformID(cursor))[0]
+          : undefined,
       }).toString();
+      console.log(
+        (await this.transformID(cursor))[0] ??
+          undefined,
+      );
+      console.log(url.search);
       const res = await json<any>(this.net.get(url));
       if (res.response.status == 200) {
         return [{

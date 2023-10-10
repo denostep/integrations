@@ -480,6 +480,7 @@ export class Appendor {
           }],
         },
       };
+      console.log(JSON.stringify(data));
       const res = await json<any>(this.net.post(
         `https://api.notion.com/v1/pages`,
         {

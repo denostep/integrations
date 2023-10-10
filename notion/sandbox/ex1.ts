@@ -22,6 +22,8 @@ try {
       'https://artpani.notion.site/d1ecc246b8304e08a780b9a312548064?pvs=4',
     ),
     'СУПЕР ТЕСТ СТРАНИЦА',
+    '📅',
+    'https://file.notion.so/f/f/5909bc5f-583d-4590-9f13-84000d8cfbbc/a7154015-e47f-40cd-ad4e-a7076007ccc4/cover.png?id=84a8913d-5f6d-479a-8c55-7f55321f43ab&table=block&spaceId=5909bc5f-583d-4590-9f13-84000d8cfbbc&expirationTimestamp=1696953600000&signature=WXf631vPwXMzhvlOOlaCa36CLLIBoEOMTb-BTUAdmwM&downloadName=cover.png',
   );
   console.log(t);
   // if (error) throw error;
